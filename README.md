@@ -21,8 +21,8 @@ Currently, following plotting modules are available in AED-MARVL:
 - Curtain plotting and animations;
 
 ## Folder Structure
-- Matlab: contains main matlab plotting scripts and libraries for MARVL;
-- Project: site-specific configurations and place for plotting results;
+- Matlab: main matlab plotting scripts and libraries for MARVL;
+- Project: site-specific configurations and recommended place for plotting results;
 - Common: place holder for common files such as unit conversion and agency information;
 - R: place holder for future development in R environment;
 
