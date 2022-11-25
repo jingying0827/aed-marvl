@@ -1,0 +1,364 @@
+master:
+  modules: [timeseries, transect, transect_stackedArea, transect_exceedance, sheet,
+    curtain, site_profiling]
+  varname:
+  - [SAL, Salinity]
+  - [TEMP, Temperature]
+  - [WQ_OXY_OXY, DO]
+  - [WQ_DIAG_PHY_TCHLA, TCHLA]
+  - [WQ_DIAG_TOT_TN, TN]
+  - [WQ_DIAG_TOT_TP, TP]
+  - [WQ_NIT_AMM, NH_4]
+  - [WQ_NIT_NIT, NO_3]
+  - [WQ_PHS_FRP, PO_4]
+  - [WQ_DIAG_TOT_TSS, TSS]
+  - [WQ_DIAG_TOT_TOC, TOC]
+  - [WQ_OGM_DOC, DOC]
+  - [WQ_DIAG_TOT_TURBIDITY, Turbidity]
+  add_human: 1.0
+  ncfile: {name: 'E:\database\AED-MARVl-v0.2\Examples\Cockburn\Data\Cockburn_kw_001_ALL_clipped.nc',
+    legend: basecase}
+  add_fielddata: 1.0
+  fielddata_matfile: E:\database\AED-MARVl-v0.2\Examples\Cockburn\Data\swan_new.mat
+  fielddata: swan
+  font: Helvetica
+  fontsize: 8.0
+  xlabelsize: 9.0
+  ylabelsize: 9.0
+  titlesize: 10.0
+  legendsize: 6.0
+  visible: 'on'
+timeseries:
+  start_plot_ID: 1.0
+  end_plot_ID: 1.0
+  plotvalidation: true
+  plotmodel: 1.0
+  plotdepth: [surface, bottom]
+  depth_range: [0.2, 100.0]
+  validation_minmax: 0.0
+  isModelRange: 1.0
+  pred_lims: [0.05, 0.25, 0.5, 0.75, 0.95]
+  filetype: eps
+  expected: 1.0
+  isFieldRange: 1.0
+  fieldprctile: [10.0, 90.0]
+  isHTML: 1.0
+  polygon_file: E:\database\AED-MARVl-v0.2\Examples\Cockburn\GIS\Cockburn_Sites_2021.shp
+  plotAllsites: 0.0
+  plotsite: [8.0, 9.0]
+  add_error: 1.0
+  isSaveErr: 1.0
+  obsTHRESH: 5.0
+  showSkill: 1.0
+  skills: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  outputdirectory: plotting/timeseries/RAW/
+  htmloutput: plotting/timeseries/HTML/
+  ErrFilename: plotting/timeseries/errormatrix.mat
+  ncfile:
+    symbol: ['-', '-']
+    translate: 1.0
+    colour:
+    - [0.6509803921568628, 0.33725490196078434, 0.1568627450980392]
+    - [0.03137254901960784, 0.34509803921568627, 0.6196078431372549]
+    edge_color:
+    - [0.6509803921568628, 0.33725490196078434, 0.1568627450980392]
+    - [0.03137254901960784, 0.34509803921568627, 0.6196078431372549]
+    col_pal_color_surf:
+    - [0.6901960784313725, 0.7450980392156863, 0.7725490196078432]
+    - [0.6352941176470588, 0.7450980392156863, 0.7725490196078432]
+    - [0.5882352941176471, 0.7450980392156863, 0.7725490196078432]
+    - [0.5882352941176471, 0.7450980392156863, 0.7725490196078432]
+    col_pal_color_bot:
+    - [0.9294117647058824, 0.9725490196078431, 0.984313725490196]
+    - [0.8, 0.9254901960784314, 0.9019607843137255]
+    - [0.6, 0.8470588235294118, 0.788235294117647]
+    - [0.4, 0.7607843137254902, 0.6431372549019608]
+  datearray: [738157.0, 738247.0, 738338.0, 738430.0, 738522.0]
+  dateformat: mm/yyyy
+  dimc: [0.9, 0.9, 0.9]
+  istitled: 1.0
+  isylabel: 1.0
+  islegend: 1.0
+  isYlim: 1.0
+  isGridon: 1.0
+  dimensions: [20.0, 10.0]
+  dailyave: 0.0
+  smoothfactor: 3.0
+  fieldsymbol: [., .]
+  fieldcolour:
+  - m
+  - [0.6, 0.6, 0.6]
+  legendlocation: northeastoutside
+  cAxis:
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+transect:
+  start_plot_ID: 1.0
+  end_plot_ID: 1.0
+  polygon_file: E:\database\AED-MARVl-v0.2\Examples\Cockburn\GIS\Curtain_polyline_100m_QC.shp
+  plotvalidation: 1.0
+  pred_lims: [0.05, 0.25, 0.5, 0.75, 0.95]
+  isRange: 1.0
+  istitled: 1.0
+  isylabel: 1.0
+  islegend: 0.0
+  isYlim: 1.0
+  isHTML: 1.0
+  isSurf: 1.0
+  isSpherical: 0.0
+  use_matfiles: 0.0
+  add_obs_num: 1.0
+  outputdirectory: plotting/transect/RAW/
+  htmloutput: plotting/transect/HTML/
+  dimc: [0.9, 0.9, 0.9]
+  boxlegend: southeast
+  rangelegend: northwest
+  dimensions: [20.0, 10.0]
+  pdates:
+  - value: [738323.0, 738338.0]
+  - value: [738338.0, 738352.0]
+  - value: [738353.0, 738369.0]
+  binfielddata: 1.0
+  binradius: 0.5
+  linedist: 1500.0
+  xlim: [0.0, 45.0]
+  xticks: [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0]
+  xlabel: Distance from Southern CS (km)
+  cAxis:
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  ncfile:
+    symbol: ['-']
+    translate: 1.0
+    colour: [0.6509803921568628, 0.33725490196078434, 0.1568627450980392]
+    edge_color: [0.6509803921568628, 0.33725490196078434, 0.1568627450980392]
+    col_pal_color:
+    - [0.6901960784313725, 0.7450980392156863, 0.7725490196078432]
+    - [0.6352941176470588, 0.7450980392156863, 0.7725490196078432]
+    - [0.5882352941176471, 0.7450980392156863, 0.7725490196078432]
+    - [0.5882352941176471, 0.7450980392156863, 0.7725490196078432]
+transectSA:
+  thevars: [WQ_PHY_GRN, WQ_PHY_DINO, WQ_PHY_DIATOM, WQ_PHY_CRYPT]
+  thelabels: [Green Algae, Dino, Diatom, Crypt]
+  thevars_conv: [4.166666666666667, 4.166666666666667, 4.166666666666667, 4.166666666666667]
+  varname: [WQ_DIAG_PHY_TCHLA, TChla (\mug/L)]
+  add_human: 1.0
+  polygon_file: E:\database\AED-MARVl-v0.2\Examples\Cockburn\GIS\Curtain_polyline_100m_QC.shp
+  plotvalidation: 1.0
+  pred_lims: [0.05, 0.25, 0.5, 0.75, 0.95]
+  isRange: 1.0
+  istitled: 1.0
+  isylabel: 1.0
+  islegend: 0.0
+  isYlim: 1.0
+  isHTML: 1.0
+  isSurf: 1.0
+  isSpherical: 0.0
+  use_matfiles: 0.0
+  add_obs_num: 1.0
+  outputdirectory: plotting/transectSA/RAW/
+  htmloutput: plotting/transectSA/HTML/
+  dimc: [0.9, 0.9, 0.9]
+  boxlegend: southeast
+  rangelegend: northwest
+  dimensions: [20.0, 10.0]
+  pdates:
+  - value: [738323.0, 738338.0]
+  - value: [738338.0, 738352.0]
+  - value: [738353.0, 738369.0]
+  binfielddata: 1.0
+  binradius: 0.5
+  linedist: 1500.0
+  xlim: [0.0, 45.0]
+  xticks: [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0]
+  xlabel: Distance from Southern CS (km)
+  cAxis:
+    value: [0.0, 20.0]
+profile:
+  cAxis:
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  - value: []
+  start_plot_ID: 1.0
+  end_plot_ID: 1.0
+  sitenames: [Cockburn, Swan]
+  siteX: [380000.0, 388340.0]
+  siteY: [6433760.0, 6458300.0]
+  plotvalidation: false
+  plotmodel: 1.0
+  filetype: eps
+  expected: 1.0
+  isHTML: 1.0
+  datearray: [738322.0, 738337.0, 738352.0, 738367.0]
+  dateformat: dd/mm/yyyy
+  dimc: [0.9, 0.9, 0.9]
+  istitled: 1.0
+  isylabel: 1.0
+  islegend: 1.0
+  isYlim: 1.0
+  isGridon: 1.0
+  dimensions: [20.0, 10.0]
+  outputdirectory: plotting/profile/RAW/
+  htmloutput: plotting/profile/HTML/
+sheet:
+  cAxis:
+    value: [28.0, 35.0]
+  start_plot_ID: 1.0
+  end_plot_ID: 1.0
+  plotdepth: [bottom]
+  plottype: figure
+  datearray: [738338.0, 738358.0]
+  resolution: [1024.0, 768.0]
+  colormap: jet
+  outputdirectory: plotting/sheet/
+  clip_depth: 0.05
+  dimc: [0.9, 0.9, 0.9]
+  istitled: 1.0
+  isColorbar: 1.0
+  Xlim: []
+  Ylim: []
+  isAxison: 1.0
+  dimensions: [20.0, 10.0]
+curtain:
+  cAxis:
+    value: [28.0, 35.0]
+  start_plot_ID: 1.0
+  end_plot_ID: 1.0
+  geofile: W:\Jayden\Simulations\Cockburn_Base\Input/Cockburn_kw_020_geo.nc
+  polyline: W:/Jayden/plotting/Curtain_polyline_100m_QC.shp
+  plottype: movie
+  FileFormat: mp4
+  Quality: 100.0
+  FrameRate: 6.0
+  resolution: [1024.0, 768.0]
+  colormap: jet
+  save_images: 1.0
+  datearray: [738338.0, 738358.0]
+  dateformat: mm/yyyy
+  plot_interval: 6.0
+  outputdirectory: plotting/curtain/
+  clip_depth: 0.05
+  dimc: [0.9, 0.9, 0.9]
+  istitled: 1.0
+  isColorbar: 1.0
+  xlim: [0.0, 45.0]
+  xticks: [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0]
+  xlabel: Distance from CS South (km)
+  isAxison: 1.0
+  dimensions: [20.0, 10.0]
+  colorbarposition: [0.92, 0.25, 0.01, 0.45]
+transectExc:
+  start_plot_ID: 13.0
+  end_plot_ID: 13.0
+  polygon_file: E:\database\AED-MARVl-v0.2\Examples\Cockburn\GIS\Curtain_polyline_100m_QC.shp
+  plotvalidation: 0.0
+  pred_lims: [0.05, 0.25, 0.5, 0.75, 0.95]
+  isRange: 1.0
+  istitled: 1.0
+  isylabel: 1.0
+  islegend: 0.0
+  isYlim: 1.0
+  isHTML: 1.0
+  isSurf: 1.0
+  isSpherical: 0.0
+  use_matfiles: 0.0
+  add_obs_num: 1.0
+  thresh:
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: []
+    legend: []
+  - value: [0.5, 1.0]
+    legend: ['%time > 0.5NTU', '%time > 1NTU']
+  outputdirectory: plotting/transect_exceedance/RAW/
+  htmloutput: plotting/transect_exceedance/HTML/
+  dimc: [0.9, 0.9, 0.9]
+  boxlegend: southeast
+  rangelegend: northwest
+  dimensions: [20.0, 10.0]
+  pdates:
+  - value: [738323.0, 738338.0]
+  - value: [738338.0, 738352.0]
+  - value: [738353.0, 738369.0]
+  binfielddata: 1.0
+  binradius: 0.5
+  linedist: 1500.0
+  xlim: [0.0, 45.0]
+  xticks: [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0]
+  xlabel: Distance from Southern CS (km)
+  cAxis:
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  - value: [0.0, 100.0]
+  ncfile:
+    symbol: ['-']
+    translate: 1.0
+    colour: [0.6509803921568628, 0.33725490196078434, 0.1568627450980392]
+    edge_color: [0.6509803921568628, 0.33725490196078434, 0.1568627450980392]
+    col_pal_color:
+    - [0.6901960784313725, 0.7450980392156863, 0.7725490196078432]
+    - [0.6352941176470588, 0.7450980392156863, 0.7725490196078432]
+    - [0.5882352941176471, 0.7450980392156863, 0.7725490196078432]
+    - [0.5882352941176471, 0.7450980392156863, 0.7725490196078432]
