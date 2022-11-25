@@ -20,11 +20,11 @@ Currently, following plotting modules are available in AED-MARVL:
 - Sheet plotting and animations;
 - Curtain plotting and animations;
 
-## Folder Structure
-- Matlab: matlab plotting scripts and libraries for MARVL;
-- Project: site-specific configurations and recommended place for plotting results;
-- Common: place holder for common files such as unit conversion and agency information;
-- R: place holder for future development in R environment;
+## Repository Organisation
+- `Matlab`: matlab plotting scripts and libraries for MARVL;
+- `Project`: site-specific configurations and recommended place for plotting results;
+- `Common`: place holder for common files such as unit conversion and agency information;
+- `R`: place holder for future development in R environment;
 
 ## Execution Instruction
 - Colone the 'csiem-marvl' repository onto local computer
