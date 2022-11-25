@@ -27,10 +27,10 @@ Currently, following plotting modules are available in AED-MARVL:
 - `R`: place holder for future development in R environment;
 
 ## Execution Instruction
-- Colone the 'csiem-marvl' repository onto local computer
-- Open Matlab (version 2020 or later versions), go to ‘csiem-marvl’ folder and enter ‘addpath(genpath('./'))’ to add the tools/libraries;
-- Go to ‘csiem-marvl/{your project}/’ path, edit the ‘MARVL.m’ to configure the plots (use the 'MARVL.m' under other project folder as templates);
-- Under the ‘csiem-marvl/{your project}/’ path, enter ‘run_AEDmarvl('./MARVL.m','matlab')’, or ‘run_AEDmarvl('./MARVL.m','yaml')’ if you wish to use YAML style configuration
+- Colone the `csiem-marvl` repository onto local computer
+- Open Matlab (version 2020 or later versions), go to `csiem-marvl` folder and enter `addpath(genpath('./'))` to add the tools/libraries;
+- Go to `csiem-marvl/{your project}/` path, edit the `MARVL.m` to configure the plots (use the 'MARVL.m' under other project folder as templates);
+- Under the `csiem-marvl/{your project}/` path, enter `run_AEDmarvl('./MARVL.m','matlab')`, or `run_AEDmarvl('./MARVL.m','yaml')` if you wish to use YAML style configuration
 
 
  
