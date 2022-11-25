@@ -38,9 +38,9 @@ Currently, following plotting modules are available in AED-MARVL:
   run_AEDmarvl('./MARVL.m','matlab')
  ```
    or if you wish to use YAML style configuration
-    ```
+ ```
    run_AEDmarvl('./MARVL.m','yaml')
-    ```
+ ```
 
 
  
