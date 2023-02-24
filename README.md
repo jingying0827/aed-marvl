@@ -2,6 +2,7 @@
 
 # csiem-marvl
 MARVL: The AED Model Assessment, Reporting and Visualisation Library
+![image](Documents/MARVL-overview.png)
 
 ## Overview
 The AED-MARVL repository is a collection of previously-developed scripts that have been used for comparing the model and monitored datasets such as time series plots and transect plots, but has been refined with uniform and easier user interfaces. At the moment, the AED-MARVL was designed with the following features:
