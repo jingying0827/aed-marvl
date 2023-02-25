@@ -5,7 +5,7 @@
 ![image](Documents/MARVL-overview.png)
 
 ## Overview
-MARVL is an integrated software package for visualizing the model outputs and observational datasets, and evaluating the model performance. The repository is a collection of AED inhouse scripts that have been developed for previous research projects, and has been refined with uniform and easier user interfaces. At the moment, the AED-MARVL was designed with the following features:
+MARVL is an integrated software package for visualizing the model outputs and observational datasets, and evaluating the model performance. One of the key challenges for water quality modelling is to assess the model performance against field observations that typically include plenty of biogeochemical variables, exist at multiple sites, and are provided by multiple agencies in different formats. To handle this challenge, the AED research group has developed a series of data processing framework to store the data in a uniform format that is compatible to the AED outputs. At the same time, the group has developed a series of model assessment methods and scripts that were specifically designed to be compatible with the AED data repository and model outputs. The repository is a collection of AED inhouse scripts that have been developed during previous research projects, and has been refined with uniform and easier user interfaces. At the moment, the AED-MARVL was designed with the following features:
 - Multiple visualizing options such as time-series, transect view, curtain view, site profiling;
 - Standard and advanced performance evaluating methods;
 - One configuration file for all options;
