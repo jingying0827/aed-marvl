@@ -24,7 +24,7 @@ MARVLs = struct;
 %
 %--------------------------------------------------------------------------
 master.modules = {...
-    'timeseries';...
+       'timeseries';...
     %   'transect';  ...
     %   'transect_stackedArea'; ...
     %   'transect_exceedance'; ...
@@ -38,34 +38,111 @@ master.modules = {...
 %    column 1: AED names;
 %    column 2: user-defined names
 master.varname = {...
+    'WQ_NIT_AMM','NH_4';...
+    'WQ_NIT_NIT','NO_3';...
+    'WQ_PHS_FRP','PO_4';...
+    'WQ_OXY_OXY','DO';...
+    'WQ_OGM_DON','DON';...
+    'WQ_OGM_DOP','DOP';...
+    'WQ_OGM_POC','POC';...
+    'WQ_OGM_PON','PON';...
+    'WQ_OGM_POP','POP';...
     'SAL','Salinity';...
-%     'TEMP','Temperature';...
-%     'WQ_OXY_OXY','DO';...
-%     'WQ_DIAG_PHY_TCHLA','TCHLA';...
-%     'WQ_DIAG_TOT_TN','TN';...
-%     'WQ_DIAG_TOT_TP','TP';...
-%     'WQ_NIT_AMM','NH_4';...
-%     'WQ_NIT_NIT','NO_3';...
-%     'WQ_PHS_FRP','PO_4';...
-%     'WQ_DIAG_TOT_TSS','TSS';...
-%     'WQ_DIAG_TOT_TOC','TOC';...
-%     'WQ_OGM_DOC','DOC';...
-%     'WQ_DIAG_TOT_TURBIDITY','Turbidity';...
+    'TEMP','Temperature';...
+    'WQ_OGM_DOC','DOC';...
+    'WQ_PHY_GRN','GRN';...
+    'WQ_PHY_DIATOM','DIATOM';...
+    'WQ_PHY_CRYPT','CRYPT';...
+    'WQ_PHY_DINO','DINO';...
+    'WQ_DIAG_TOT_TN','TN';...
+    'WQ_DIAG_TOT_TP','TP';...
+    'WQ_DIAG_PHY_TCHLA','TCHLA';...
+    'WQ_DIAG_NIT_AMM_DSF','AMMDSF';...
+    'WQ_DIAG_NIT_NIT_DSF','NITDSF';...
+    'WQ_DIAG_PHS_FRP_DSF','FRPDDF';...
+    'WQ_DIAG_OGM_POC_SWI','POCSWI';...
+    'WQ_DIAG_OGM_DOC_SWI','DOCSWI';...
+    'WQ_DIAG_OGM_DON_SWI','DONSWI';...
+    'WQ_DIAG_OGM_DOP_SWI','DOPSWI';...
+    'WQ_DIAG_OGM_DOC_MIN','DOCMIN';...
+    'WQ_DIAG_OGM_DON_MIN','DONMIN';...
+    'WQ_DIAG_OGM_DOP_MIN','DOPMIN';...
+    'WQ_DIAG_TOT_TSS','TSS';...
+    'WQ_DIAG_TOT_TOC','TOC';...
+    'WQ_DIAG_TOT_TURBIDITY','Turbidity';...
+    'WQ_DIAG_PHY_TPHY','TPHY';...
+    'WQ_DIAG_PHY_PHY_SWI_N','PHYSWIN';...
+    'WQ_DIAG_PHY_PHY_SWI_P','PHYSWIP';...
+    'WQ_DIAG_MAG_MAG_BEN','MAGBEN';...
+    'WQ_DIAG_PHY_MPB_BEN','MPBBEN';...
+    'WQ_DIAG_PHY_UPT_NH4','PHYUPTNH4';...
+    'WQ_DIAG_PHY_UPT_NO3','PHYUPTNO3';...
+    'WQ_DIAG_PHY_UPT_PO4','PHYUPTPO4';...
+    'WQ_DIAG_NIT_NITRIF','NITRIF';...
+    'WQ_DIAG_NIT_DENIT','DENIT';...
+    'WQ_DIAG_MAG_PUP_BEN','MAG-PUP-BEN';...
+    'WQ_DIAG_MAG_NUP_BEN','MAG-NUP-BEN';...
+    'WQ_DIAG_MAG_IN_BEN','MAG-IN-BEN';...
+    'WQ_DIAG_MAG_IP_BEN','MAG-IP-BEN';...
+    'WQ_DIAG_MAG_MAG_BEN','MAG-MAG-BEN';...
+    'WQ_DIAG_MAG_ULVA_A_C2P_BEN','ULVA-A-C2P-BEN';...
+    'WQ_DIAG_MAG_ULVA_A_C2N_BEN','ULVA-A-C2N-BEN';...
+    'WQ_DIAG_MAG_ULVA_A_N2P_BEN','ULVA-A-N2P-BEN';...
+    'WQ_DIAG_MAG_ULVA_B_C2P_BEN','ULVA-B-C2P-BEN';...
+    'WQ_DIAG_MAG_ULVA_B_C2N_BEN','ULVA-B-C2N-BEN';...
+    'WQ_DIAG_MAG_ULVA_B_N2P_BEN','ULVA-B-N2P-BEN';...
+    'WQ_DIAG_MAG_ULVA_C_C2P_BEN','ULVA-C-C2P-BEN';...
+    'WQ_DIAG_MAG_ULVA_C_C2N_BEN','ULVA-C-C2N-BEN';...
+    'WQ_DIAG_MAG_ULVA_C_N2P_BEN','ULVA-C-N2P-BEN';...
+    'WQ_DIAG_PHY_DINO_NTOP','DINO-NTOP';...
+    'WQ_DIAG_PHY_DIATOM_NTOP','DIATOM-NTOP';...
+    'WQ_DIAG_PHY_CRYPT_NTOP','CRYPT-NTOP';...
+    'WQ_DIAG_PHY_GRN_NTOP','GRN-NTOP';...
     };
 master.add_human = 1; % option to use user-define names, if 0 use AED names
 
 % Models
-master.ncfile(1).name = 'E:\database\AED-MARVl-v0.3\Examples\Coorong\hchb_Gen2_201707_202201_all.nc';
-master.ncfile(1).legend = 'Basecase';
-master.ncfile(1).tag = 'TFV'; % tag for model type: TFV for tuflow-fv; or ROMS
+master.ncfile(1).name = '/Projects2/CDM2022/HCHB-paper-warmup-newBathy-MAG-DONV2-fixedV4/output_basecase_005/eWater_basecase_005V4_test_all.nc';
+%'/Projects2/CDM2022/HCHB-paper-warmup-newBathy-MAG/output_basecase_005V4Boobook//eWater_basecase_005V4_test_all.nc';
+%'/Projects2/CDM2022/eWater2022-scenarios-VH-paper-warmup-newtestV2/output_basecase_005/eWater_basecase_005_all.nc';
+%'/Projects2/CDM2022/CDM22_newMesh_newMZ_testing/output_basecase_005/eWater_basecase_newMesh_BB_TEST_v4_all.nc';
+%'/Projects2/CDM2022/eWater2022-scenarios-VH-paper-warmup-newtest/output_basecase_005_t1/eWater_basecase_005_all.nc';
+%'/Projects2/CDM2022/eWater2022-scenarios-VH-paper-warmup/output_basecase_005/eWater_basecase_005_all.nc';
+%'/Projects2/CDM2022/eWater2022-scenarios-VH/output_basecase/eWater_basecase_all.nc';
+%'/Projects2/CDM2022/eWater2022-scenarios-VH-paper-warmup-nit-Xsp/output_basecase_005/eWater_basecase_005_allV1.nc';
+master.ncfile(1).legend = 'V4';
+master.ncfile(1).tag = 'TFV';
+
+% master.ncfile(2).name = '/Projects2/CDM2022/HCHB-paper-warmup-newBathy-MAG-DONV2-fixedV3/output_basecase_005/eWater_basecase_005V4_test_all.nc';
+ %'/Projects2/CDM2022/HCHB-paper-warmup-newBathy-MAG/output_basecase_005V5Sittella/eWater_basecase_005V4_test_all.nc';
+ %'/Projects2/CDM2022/eWater2022-scenarios-VH-paper-warmup-newtest/output_basecase_005_t1/eWater_basecase_005_all.nc';
+ %'/Projects2/CDM2022/eWater2022-scenarios-VH-paper-warmup-nit/output_basecase_005/eWater_basecase_005_all.nc';
+% master.ncfile(2).legend = 'V3';
+% master.ncfile(2).tag = 'TFV';
+
+ %master.ncfile(3).name = '/Projects2/CDM2022/HCHB-paper-warmup-newBathy-MAG-DONV2-fixedV4/output_basecase_005/eWater_basecase_005V4_test_all.nc';
+ %master.ncfile(3).legend = 'V4';
+ %master.ncfile(3).tag = 'TFV';
+% 
+% master.ncfile(4).name = '/Projects2/CDM2022/eWater2022-scenarios-VH/output_NE3/eWater_NE3_all.nc';
+% master.ncfile(4).legend = 'NE3';
+% master.ncfile(4).tag = 'TFV';
+% 
+% master.ncfile(5).name = '/Projects2/CDM2022/eWater2022-scenarios-VH/output_NE4/eWater_NE4_all.nc';
+% master.ncfile(5).legend = 'NE4';
+% master.ncfile(5).tag = 'TFV';
+%  
+% master.ncfile(6).name = '/Projects2/CDM2022/eWater2022-scenarios-VH/output_NE5/eWater_NE5_all.nc';
+% master.ncfile(6).legend = 'NE5';
+% master.ncfile(6).tag = 'TFV';
 
 % field data, stored in standard AED .mat format
 master.add_fielddata = 1;
-master.fielddata_matfile = 'W:\busch_github\CDM\data\store\archive\cllmm_noALS.mat';
+master.fielddata_matfile = '/Projects2/busch_github/CDM/data/store/archive/cllmm_noALS.mat';
 master.fielddata = 'cllmm';
 
 % general plotting features
-master.font = 'Helvetica';
+master.font = 'Times New Roman';
 master.fontsize   = 8;
 master.xlabelsize = 9;
 master.ylabelsize = 9;
@@ -80,7 +157,7 @@ MARVLs.master = master; clear master;
 % -------------------------------------------------------------------------
 
 timeseries.start_plot_ID = 1; % select which variable to plot
-timeseries.end_plot_ID = 13;
+timeseries.end_plot_ID = 16;
 
 timeseries.plotvalidation = true; % Add field data to figure (true or false)
 timeseries.plotmodel = 1;
@@ -89,14 +166,15 @@ timeseries.plotdepth = {'surface'};  %  {'surface','bottom'} Cell-array with eit
 timeseries.depth_range = [0.2 100];
 timeseries.validation_minmax = 0;    % option to add max/min observations
 timeseries.isModelRange = 1;         % option to plot model range with below percentile
-timeseries.pred_lims = [0.05,0.25,0.5,0.75,0.95];
+timeseries.pred_lims = [0.10,0.25,0.5,0.75,0.90];
 
 timeseries.isFieldRange = 0;         % option to add plot field data range
 timeseries.fieldprctile = [10 90];
 timeseries.isHTML = 1;
 
 % polygon file define the site areas
-timeseries.polygon_file = 'W:/busch_github/CDM/gis/supplementary/HCHB_Report_Sites.shp';
+timeseries.polygon_file = '/Projects2/busch_github/CDM/gis/supplementary/HCHB_Report_Sites.shp';
+%'/Projects2/busch_github/CDM/gis/supplementary/Coorong/Coorong_obs_sites.shp';
 
 % option to plot all sites or selected sites
 timeseries.plotAllsites = 1;
@@ -120,9 +198,9 @@ timeseries.skills = [1,... % r: regression coefficient (0-1)
     1,... % NRMS: RMSE normalized to mean observation
     1,... % MEF: model efficienty, Nash-Sutcliffe Efficiency
     ];
-timeseries.outputdirectory = 'E:\database\AED-MARVL-v0.4\Projects\Coorong\plotting-timeseries\RAW\';
-timeseries.htmloutput = 'E:\database\AED-MARVL-v0.4\Projects\Coorong\plotting-timeseries\HTML\';
-timeseries.ErrFilename = 'E:\database\AED-MARVL-v0.4\Projects\Coorong\plotting-timeseries\errormatrix.mat';
+timeseries.outputdirectory = '/Projects2/CDM2022/AED-MARVL-v0.4/Projects/Coorong/V4_validation_range/RAW/';
+timeseries.htmloutput = '/Projects2/CDM2022/AED-MARVL-v0.4/Projects/Coorong/V4_validation_range/HTML/';
+timeseries.ErrFilename = '/Projects2/CDM2022/AED-MARVL-v0.4/Projects/Coorong/V4_validation_range/errormatrix.mat';
 
 timeseries.ncfile(1).symbol = {'-'};
 timeseries.ncfile(1).translate = 1;
@@ -131,9 +209,43 @@ timeseries.ncfile(1).edge_color = {[166,86,40]./255;[8,88,158]./255};
 timeseries.ncfile(1).col_pal_color_surf =[[176 190 197]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
 timeseries.ncfile(1).col_pal_color_bot  =[[237,248,251]./255;[204,236,230]./255;[153,216,201]./255;[102,194,164]./255];
 
+timeseries.ncfile(2).symbol = {'-'};
+timeseries.ncfile(2).translate = 1;
+timeseries.ncfile(2).colour = {[27,158,119]./255;[27,158,119]./255};% Surface and Bottom
+timeseries.ncfile(2).edge_color = {[8,88,158]./255;[8,88,158]./255};
+timeseries.ncfile(2).col_pal_color_surf =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+timeseries.ncfile(2).col_pal_color_bot  =[[102,194,164]./255;[204,236,230]./255;[153,216,201]./255;[102,194,164]./255];
+
+timeseries.ncfile(3).symbol = {'-'};
+timeseries.ncfile(3).translate = 1;
+timeseries.ncfile(3).colour = {[217,95,2]./255;[217,95,2]./255};% Surface and Bottom
+timeseries.ncfile(3).edge_color = {[215,48,39]./255;[215,48,39]./255};
+timeseries.ncfile(3).col_pal_color_surf =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+timeseries.ncfile(3).col_pal_color_bot  =[[102,194,164]./255;[204,236,230]./255;[153,216,201]./255;[102,194,164]./255];
+
+timeseries.ncfile(4).symbol = {'-'};
+timeseries.ncfile(4).translate = 1;
+timeseries.ncfile(4).colour = {[117,112,179]./255;[117,112,179]./255};% Surface and Bottom
+timeseries.ncfile(4).edge_color = {[127,191,123]./255;[127,191,123]./255};
+timeseries.ncfile(4).col_pal_color_surf =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+timeseries.ncfile(4).col_pal_color_bot  =[[102,194,164]./255;[204,236,230]./255;[153,216,201]./255;[102,194,164]./255];
+
+timeseries.ncfile(5).symbol = {'-'};
+timeseries.ncfile(5).translate = 1;
+timeseries.ncfile(5).colour = {[231,41,138]./255;[231,41,138]./255};% Surface and Bottom
+timeseries.ncfile(5).edge_color = {[44,162,95]./255;[44,162,95]./255};
+timeseries.ncfile(5).col_pal_color_surf =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+timeseries.ncfile(5).col_pal_color_bot  =[[102,194,164]./255;[204,236,230]./255;[153,216,201]./255;[102,194,164]./255];
+
+timeseries.ncfile(6).symbol = {'-'};
+timeseries.ncfile(6).translate = 1;
+timeseries.ncfile(6).colour = {[230,171,2]./255;[230,171,2]./255};% Surface and Bottom
+timeseries.ncfile(6).edge_color = {[44,162,95]./255;[44,162,95]./255};
+timeseries.ncfile(6).col_pal_color_surf =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+timeseries.ncfile(6).col_pal_color_bot  =[[102,194,164]./255;[204,236,230]./255;[153,216,201]./255;[102,194,164]./255];
 
 % plotting configuration
-timeseries.datearray = datenum(2017,7:6:67,01);
+timeseries.datearray = datenum(2017,1:6:67,01);
 timeseries.dateformat = 'mm/yy';
 
 timeseries.dimc = [0.9 0.9 0.9]; % dimmest (lightest) color
@@ -145,7 +257,7 @@ timeseries.isGridon = 1;
 timeseries.dimensions = [20 10]; % Width & Height in cm
 
 timeseries.dailyave = 0; % 1 for daily average, 0 for off. Daily average turns off smoothing.
-timeseries.smoothfactor = 3; % Must be odd number (set to 3 if none)
+timeseries.smoothfactor = 1; % Must be odd number (set to 3 if none)
 
 timeseries.fieldsymbol = {'.','.'}; % Cell with same number of levels
 timeseries.fieldcolour = {'m',[0.6 0.6 0.6]}; % Cell with same number of levels
@@ -153,6 +265,26 @@ timeseries.fieldcolour = {'m',[0.6 0.6 0.6]}; % Cell with same number of levels
 timeseries.legendlocation = 'northeastoutside';
 
 % ylim
+% 'SAL','Salinity';...
+%     'TEMP','Temperature';...
+%     'WQ_OXY_OXY','DO';...
+%     'WQ_DIAG_PHY_TCHLA','TCHLA';...
+%     'WQ_DIAG_TOT_TN','TN';...
+%     'WQ_DIAG_TOT_TP','TP';...
+%     'WQ_NIT_AMM','NH_4';...
+%     'WQ_NIT_NIT','NO_3';...
+%     'WQ_PHS_FRP','PO_4';...
+%     'WQ_DIAG_TOT_TSS','TSS';...
+%     'WQ_DIAG_TOT_TOC','TOC';...
+%     'WQ_OGM_DOC','DOC';...
+%     'WQ_DIAG_TOT_TURBIDITY','Turbidity';...
+% timeseries.cAxis(1).value = [0 220];
+% timeseries.cAxis(2).value = [5 30];
+% timeseries.cAxis(3).value = [0 12];
+% timeseries.cAxis(4).value = [0 140];
+% timeseries.cAxis(5).value = [0 8];
+% timeseries.cAxis(6).value = [0 0.5];
+
 for vvvv=1:size(MARVLs.master.varname,1)
     timeseries.cAxis(vvvv).value = [ ];
 end
@@ -164,9 +296,9 @@ MARVLs.timeseries = timeseries; clear timeseries;
 % -------------------------------------------------------------------------
 
 transect.start_plot_ID = 1;
-transect.end_plot_ID = 2;
+transect.end_plot_ID = 13;
 
-transect.polygon_file = 'E:\database\AED-MARVl-v0.1\GIS\Coorong\Transect_Coorong.shp';
+transect.polygon_file = '/Projects2/CDM2022/AED-MARVL-v0.4/Projects/Coorong/GIS/Coorong/Transect_Coorong.shp';
 % Add field data to figure
 transect.plotvalidation = 1; % 1 or 0
 transect.pred_lims = [0.05,0.25,0.5,0.75,0.95];
@@ -184,8 +316,8 @@ transect.add_obs_num = 1;
 %config.boxon = 1;
 
 % ___
-transect.outputdirectory = 'E:\database\AED-MARVl-v0.2\Examples\Coorong\plotting/transect/RAW/';
-transect.htmloutput = 'E:\database\AED-MARVl-v0.2\Examples\Coorong\plotting/transect/HTML/';
+transect.outputdirectory = '/Projects2/CDM2022/AED-MARVL-v0.4/Projects/Coorong/transect_BBV4/RAW/';
+transect.htmloutput = '/Projects2/CDM2022/AED-MARVL-v0.4/Projects/Coorong/transect_BBV4/HTML/';
 
 % plotting configuration
 transect.dimc = [0.9 0.9 0.9]; % dimmest (lightest) color
@@ -193,11 +325,9 @@ transect.boxlegend = 'southeast';
 transect.rangelegend = 'northwest';
 transect.dimensions = [20 10]; % Width & Height in cm
 
-i=1;
-transect.pdates(i).value = [datenum(2017,07,01) datenum(2017,10,01)];i=i+1;
-transect.pdates(i).value = [datenum(2017,10,01) datenum(2018,01,01)];i=i+1;
-transect.pdates(i).value = [datenum(2018,07,01) datenum(2018,10,01)];i=i+1;
-
+for i=1:20
+transect.pdates(i).value = [datenum(2017,7+(i-1)*3,01) datenum(2017,07+i*3,01)-1];
+end
 transect.binfielddata = 1;
 % radius distance to include field data. Used to bin data where number of
 % sites is higher, but the frequency of sampling is low. The specified
@@ -214,13 +344,14 @@ transect.linedist = 1500;%  in m
 
 transect.xlim = [0 110];% xlim in KM
 transect.xticks = [0:10:110];
-transect.xlabel = 'Distance from Mouth (km)';
+transect.xlabel = 'Distance from Goolwa to South Lagoon (km)';
+
+transect.cAxis(1).value = [0 200];
 
 % ylim
-for vvvv=1:size(MARVLs.master.varname,1)
+for vvvv=2:size(MARVLs.master.varname,1)
     transect.cAxis(vvvv).value = [ ];
 end
-
 transect.ncfile(1).symbol = {'-'};
 transect.ncfile(1).translate = 1;
 transect.ncfile(1).colour = [166,86,40]./255;% Surface and Bottom
@@ -229,9 +360,33 @@ transect.ncfile(1).col_pal_color =[[176 190 197]./255;[162 190 197]./255;[150 19
 
 transect.ncfile(2).symbol = {'-'};
 transect.ncfile(2).translate = 1;
-transect.ncfile(2).colour = [8,88,158]./255;% Surface and Bottom
+transect.ncfile(2).colour = [27,158,119]./255;% Surface and Bottom
 transect.ncfile(2).edge_color = [8,88,158]./255;
 transect.ncfile(2).col_pal_color =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+
+transect.ncfile(3).symbol = {'-'};
+transect.ncfile(3).translate = 1;
+transect.ncfile(3).colour = [217,95,2]./255;% Surface and Bottom
+transect.ncfile(3).edge_color = [8,88,158]./255;
+transect.ncfile(3).col_pal_color =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+
+transect.ncfile(4).symbol = {'-'};
+transect.ncfile(4).translate = 1;
+transect.ncfile(4).colour = [117,112,179]./255;% Surface and Bottom
+transect.ncfile(4).edge_color = [8,88,158]./255;
+transect.ncfile(4).col_pal_color =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+
+transect.ncfile(5).symbol = {'-'};
+transect.ncfile(5).translate = 1;
+transect.ncfile(5).colour = [231,41,138]./255;% Surface and Bottom
+transect.ncfile(5).edge_color = [8,88,158]./255;
+transect.ncfile(5).col_pal_color =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
+
+transect.ncfile(6).symbol = {'-'};
+transect.ncfile(6).translate = 1;
+transect.ncfile(6).colour = [230,171,2]./255;% Surface and Bottom
+transect.ncfile(6).edge_color = [8,88,158]./255;
+transect.ncfile(6).col_pal_color =[[102,194,164]./255;[162 190 197]./255;[150 190 197]./255;[150 190 197]./255];
 
 MARVLs.transect = transect; clear transect;
 
