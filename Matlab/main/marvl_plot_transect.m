@@ -16,7 +16,7 @@ config=check_transect_config(config);
 def=config;
 %check_transect_config_vars_F;
 %--------------------------------------------------------------------------
-disp('plottfv_transect: START')
+%disp('plottfv_transect: START')
 disp('')
 
 % load in model geometry (layers, depth etc)
@@ -100,14 +100,17 @@ for var = config.start_plot_ID:config.end_plot_ID
                 
             if config.isRange
                 fig = fillyy(data(mod).dist,data(mod).pred_lim_ts(1,:),data(mod).pred_lim_ts(2*nn-1,:),def.dimc,config.ncfile(mod).col_pal_color(1,:));hold on;
-                set(fig,'DisplayName',[ncfile(mod).legend,' (Range)']);
+                set(fig,'DisplayName',[ncfile(mod).legend,' (Range 5^{th}-95^{th})']);
                 set(fig,'FaceAlpha', def.alph);
+                uistack(fig,'bottom');
                 hold on;
                 
                 for plim_i=2:(nn-1)
                     fig2 = fillyy(data(mod).dist,data(mod).pred_lim_ts(plim_i,:),data(mod).pred_lim_ts(2*nn-plim_i,:),def.dimc.*0.9.^(plim_i-1),config.ncfile(mod).col_pal_color(plim_i,:));
-                    set(fig2,'HandleVisibility','off');
+                   % set(fig2,'HandleVisibility','off');
+                    set(fig2,'DisplayName',[ncfile(mod).legend,' (Range 25^{th}-75^{th})']); %Surf
                     set(fig2,'FaceAlpha', def.alph);
+                    uistack(fig2,'bottom');
                 end
             end
         end
@@ -159,7 +162,7 @@ for var = config.start_plot_ID:config.end_plot_ID
             ylim(def.cAxis(var).value);
         end
         
-        if config.add_human
+        if master.add_human
             ylabel([regexprep(loadname_human,'_',' '),' (',c_units,')'],...
                 'fontsize',master.ylabelsize,'color',[0.4 0.4 0.4],'horizontalalignment','center');
         else
@@ -235,7 +238,26 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
         
         finalname = [savedir,image_name];
-        print(gcf,finalname,'-opengl','-dpng');
+        finalnameEPS = [savedir,'eps/',image_name];
+      %  print(gcf,finalname,'-opengl','-dpng');
+        
+        if exist('filetype','var')
+            if strcmpi(filetype,'png')
+               % print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-opengl');
+                print(gcf,finalname,'-opengl','-dpng');
+            else
+                %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+              %  finalname_p2 = [savedir,'\eps\',final_sitename];
+                finalnameEPS=regexprep(finalnameEPS,'.png','.eps');
+                saveas(gcf,finalnameEPS,'epsc');
+                exportgraphics(gcf,regexprep(finalname,'.png','.jpg'),'Resolution',300);
+            end
+        else
+            %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+            finalnameEPS=regexprep(finalname,'.png','.eps');
+            saveas(gcf,finalnameEPS,'epsc');
+            exportgraphics(gcf,regexprep(finalname,'.png','.jpg'),'Resolution',300);
+        end
         
         close all force;
         clear data;
@@ -243,7 +265,8 @@ for var = config.start_plot_ID:config.end_plot_ID
     end
     
     if config.isHTML
-        create_html_for_directory_onFly(savedir,loadname,config.htmloutput);
+      %  create_html_for_directory_onFly(savedir,loadname,config.htmloutput);
+        create_html_for_directory(config.outputdirectory,config.htmloutput);
     end
 end
 

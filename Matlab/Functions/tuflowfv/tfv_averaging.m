@@ -18,7 +18,7 @@ if isfield(def,'dailyave')
             
             for j = 1:length(u_months)
                 
-                for k = 1:length(u_days);
+                for k = 1:length(u_days)
                     
                     ss = find(mVec(:,1) == u_years(i) & ...
                         mVec(:,2) == u_months(j) & ...

@@ -37,7 +37,7 @@ function marvl_plot_timeseries(MARVLs,style)
 disp('plot_timeseries: START');
 % 
 % clear; close all;
-% run('E:\database\AED-MARVL-v0.4\Projects\Cockburn\MARVL.m');
+% run('E:\database\AED-MARVL-v0.4\Projects\Erie\MARVL.m');
 master=MARVLs.master;
 config=MARVLs.timeseries;
 %style='matlab';
@@ -95,6 +95,13 @@ for var = config.start_plot_ID:config.end_plot_ID
           %  rawdata=load_AED_vars(master.ncfile,mod,loadname,allvars);
             if isfield(master.ncfile(mod),'tag') && strcmpi(master.ncfile(mod).tag,'ROMS')
                 rawdata.data = [];
+%             elseif strcmp(loadname,'TPTN')
+%                 TN =  ncread(master.ncfile(mod).name,'WQ_DIAG_TOT_TN'); %tfv_readnetcdf(master.ncfile(mod).name,'names',{'WQ_DIAG_TOT_TN'});
+%                 TP =  ncread(master.ncfile(mod).name,'WQ_DIAG_TOT_TP'); %tfv_readnetcdf(master.ncfile(mod).name,'names',{'WQ_DIAG_TOT_TP'});
+%                 rawdata.data = TN./TP;
+%                 rawdata.data(TN==0)=16;
+%                 clear TN TP;
+%                 
             else
                 rawdata=load_AED_vars(master.ncfile,mod,loadname,allvars);
             end
@@ -125,7 +132,7 @@ for var = config.start_plot_ID:config.end_plot_ID
         isConv=0;
         if config.plotmodel
         for mod = 1:length(master.ncfile)
-            if isfield(t_data(mod).fields,loadname) 
+            if (isfield(t_data(mod).fields,loadname) || find(contains({'TNTP','PONDON','DINDIP'},loadname))>0)
                 tStart = tic;
 
                 if isfield(master.ncfile(mod),'tag') && strcmpi(master.ncfile(mod).tag,'ROMS')
@@ -136,7 +143,12 @@ for var = config.start_plot_ID:config.end_plot_ID
                     marvl_getmodeldatapolygon_quick(raw(mod).data,...
                     shp(site),{loadname},d_data(mod),config,0);
                 
-                 end
+                end
+                 
+                if find(contains({'TNTP','PONDON','DINDIP'},loadname))>0
+                    isConv=1;
+                    c_units='-';
+                end
                 
                 % sort model/observation data and add to plot
                 for ll=1:length(config.plotdepth)
@@ -265,7 +277,7 @@ for var = config.start_plot_ID:config.end_plot_ID
             if config.showSkill && ~isempty(skill_summary)
                 if ~isnan(errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).R)
                 hlp=get(leg,'Position');
-                dim=[hlp(1)+0.025 0.25 0.15 0.1];
+                dim=[hlp(1) 0.27 0.15 0.1];%[hlp(1)+0.025 0.25 0.15 0.1];
                 ha=annotation('textbox',dim,'String',...
                     skill_summary,'FitBoxToText','on','FontName',master.font,'Interpreter','tex'); %'FixedWidth'
                 set(ha,'FontSize',master.legendsize);
@@ -287,10 +299,16 @@ for var = config.start_plot_ID:config.end_plot_ID
             if strcmpi(filetype,'png')
                 print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-opengl');
             else
-                saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+                %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+                finalname_p2 = [savedir,'\eps\',final_sitename];
+                saveas(gcf,finalname_p2,'epsc');
+                exportgraphics(gcf,regexprep(finalname_p,'.eps','.jpg'),'Resolution',300)
             end
         else
-            saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+            %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+            finalname_p2 = [savedir,'\eps\',final_sitename];
+            saveas(gcf,finalname_p2,'epsc');
+            exportgraphics(gcf,regexprep(finalname_p,'.eps','.jpg'),'Resolution',300)
         end
         
         close all force;
@@ -375,181 +393,58 @@ else
     data_to_plot=data(mod).pred_lim_ts;
 end
 
-%  add field data if isvalidation
-if isvalidation && mod == 1
-    if ~isempty(sss)
-        
-        site_string = ['     field: '];
-        agencyused = [];
-        for j = 1:length(sss)
-            if isfield(fdata.(sitenames{sss(j)}),loadname)
-                xdata_t = [];
-                ydata_t = [];
-                
-                if ~config.validation_raw
-                    [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
-                        get_field_at_depth(fdata.(sitenames{sss(j)}).(loadname).Date,...
-                        fdata.(sitenames{sss(j)}).(loadname).Data,...
-                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer);
-                else
-                    [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
-                        get_field_at_depth_raw(fdata.(sitenames{sss(j)}).(loadname).Date,...
-                        fdata.(sitenames{sss(j)}).(loadname).Data,...
-                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer);
-                end
-                
-                gfg = find(xdata_ta >= config.datearray(1) & xdata_ta <= config.datearray(end));
-                
-                if ~isempty(gfg)
-                    xdata_t = xdata_ta(gfg);
-                    ydata_t = ydata_ta(gfg);
-                    if ~config.validation_raw
-                        ydata_max_t = ydata_max_ta(gfg);
-                        ydata_min_t = ydata_min_ta(gfg);
-                    else
-                        ydata_max_t = [];
-                        ydata_min_t = [];
-                    end
-                end
-                
-                if ~isempty(xdata_t)
-                    if ~config.validation_raw
-                        [xdata_d,ydata_d] = process_daily(xdata_t,ydata_t);
-                        [~,ydata_max_d] = process_daily(xdata_t,ydata_max_t);
-                        [~,ydata_min_d] = process_daily(xdata_t,ydata_min_t);
-                    else
-                        xdata_d =  xdata_t;
-                        ydata_d = ydata_t;
-                        ydata_max_d = [];
-                        ydata_min_d = [];
-                    end
-                    
-                    [ydata_d,c_units,isConv] = tfv_Unit_Conversion(ydata_d,loadname);
-                    [ydata_max_d,~,~] = tfv_Unit_Conversion(ydata_max_d,loadname);
-                    [ydata_min_d,~,~] = tfv_Unit_Conversion(ydata_min_d,loadname);
-                    
-                    xdata_dt=[xdata_dt xdata_d'];
-                    ydata_dt=[ydata_dt ydata_d];
-                    
-                    if isfield(fdata.(sitenames{sss(j)}).(loadname),'Agency')
-                        agency = fdata.(sitenames{sss(j)}).(loadname).Agency;
-                    else
-                        agency = 'Observations';
-                    end
-                    site_string = [site_string,' ',sitenames{sss(j)},'(',agency,'),'];
-                    
-                    % define symbols and colors for different agencies, for new sites simply add the 
-                    %   new agency names into the 'AgencyNameCollection' list in the 
-                    %   'marvl_sort_agency_information.m' script;
-                    [mface,mcolor,agencyname] = marvl_sort_agency_information(agency);
-                    agencyused = [agencyused;{agencyname}];
-                    
-                    if strcmpi(style,'matlab')
-                        edge_color=config.ncfile(mod).edge_color;
-                        colour=config.ncfile(mod).colour;
-                    elseif strcmpi(style,'yaml')
-                        edge_color{1}=config.ncfile(mod).edge_color(1,:);
-                        edge_color{2}=config.ncfile(mod).edge_color(2,:);
-                        colour{1}=config.ncfile(mod).colour(1,:);
-                        colour{2}=config.ncfile(mod).colour(2,:);
-                    end
-                    
-                    if config.plotvalidation
-                        fgf = sum(strcmpi(agencyused,agencyname));
-                        if strcmpi(layer,'bottom') == 1
-                        if fgf > 1
-                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
-                                edge_color{2},'markerfacecolor',...
-                                mcolor,'markersize',3,'HandleVisibility','off');hold on
-                            uistack(fp,'top');
-                            if config.validation_minmax
-                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                            end
-                            uistack(fp,'top');
-                        else
-                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
-                                edge_color{2},'markerfacecolor',mcolor,...
-                                'markersize',3,'displayname',[agency,' (Bot)']);hold on; %,' Surf'
-                            uistack(fp,'top');
-                            if config.validation_minmax
-                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                            end
-                            uistack(fp,'top');
-                        end
-                        
-                        else
-                        if fgf > 1
-                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
-                                edge_color{1},'markerfacecolor',...
-                                mcolor,'markersize',3,'HandleVisibility','off');hold on
-                            uistack(fp,'top');
-                            if config.validation_minmax
-                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                            end
-                            uistack(fp,'top');
-                        else
-                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
-                                edge_color{1},'markerfacecolor',mcolor,...
-                                'markersize',3,'displayname',[agency,' (Surf)']);hold on; %,' Surf'
-                            uistack(fp,'top');
-                            if config.validation_minmax
-                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
-                                    'HandleVisibility','off');hold on
-                            end
-                            uistack(fp,'top');
-                        end
-                            
-                        end
-                        
-                        if config.isYlim
-                            if ~isempty(config.cAxis(var).value)
-                                ggg = find(ydata_d > config.cAxis(var).value(2));
-                                
-                                if ~isempty(ggg)
-                                    agencyused = [agencyused;{'Outside Range'}];
-                                    fgf = sum(strcmpi(agencyused,'Outside Range'));
-                                    rdata = [];
-                                    rdata(1:length(ggg),1) = config.cAxis(var).value(2);
-                                    hhh = find(xdata_d(ggg) >= config.datearray(1) & ...
-                                        xdata_d(ggg) <= config.datearray(end));
-                                    
-                                    if ~isempty(hhh)
-                                        if fgf > 1
-                                            fp = plot(xdata_d(ggg),rdata,'k+',...
-                                                'markersize',4,'linewidth',1,'HandleVisibility','off');hold on
-                                            uistack(fp,'top');
-                                        else
-                                            fp = plot(xdata_d(ggg),rdata,'k+',...
-                                                'markersize',4,'linewidth',1,'displayname','Outside Range');hold on
-                                            uistack(fp,'top');
-                                        end
-                                        uistack(fp,'top');
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-        
-        if(strlength(site_string)>7)
-            disp(site_string)
-        end
-        clear site_string;
-    end
+if strcmpi(style,'matlab')
+    leg=master.ncfile(mod).legend;
+elseif strcmpi(style,'yaml')
+    leg=master.ncfile(mod).legend{1};
 end
+
+%option to plot percentile band
+if config.plotmodel && config.isModelRange == 1
+    num_lims = length(config.pred_lims);
+    nn = (num_lims+1)/2;
+    if strcmpi(layer,'bottom') == 1
+    fig = fillyy(data(mod).date,data_to_plot(1,:),data_to_plot(2*nn-1,:),...
+        config.dimc,config.ncfile(mod).col_pal_color_bot(1,:));hold on
+    set(fig,'DisplayName',[leg,' (Bot 5^{th}-95^{th})']); %Surf
+    set(fig,'FaceAlpha', config.alph);
+    uistack(fig,'bottom');
+    hold on;
+    
+    for plim_i=2:(nn-1)
+        fig2 = fillyy(data(mod).date,data_to_plot(plim_i,:),...
+            data_to_plot(2*nn-plim_i,:),config.dimc.*0.9.^(plim_i-1),...
+            config.ncfile(mod).col_pal_color_bot(plim_i,:));hold on;
+        set(fig2,'DisplayName',[leg,' (Bot 25^{th}-75^{th})']); %Surf
+       % set(fig2,'HandleVisibility','off');
+        set(fig2,'FaceAlpha', config.alph);
+        uistack(fig2,'bottom');
+    end
+    
+        
+    else
+        
+        fig = fillyy(data(mod).date,data_to_plot(1,:),data_to_plot(2*nn-1,:),...
+        config.dimc,config.ncfile(mod).col_pal_color_surf(1,:));hold on
+    set(fig,'DisplayName',[leg,' (Surf 5^{th}-95^{th})']); %Surf
+    set(fig,'FaceAlpha', config.alph);
+    hold on;
+    uistack(fig,'bottom');
+    
+    for plim_i=2:(nn-1)
+        fig2 = fillyy(data(mod).date,data_to_plot(plim_i,:),...
+            data_to_plot(2*nn-plim_i,:),config.dimc.*0.9.^(plim_i-1),...
+            config.ncfile(mod).col_pal_color_surf(plim_i,:));hold on;
+       % set(fig2,'HandleVisibility','off');
+        set(fig2,'DisplayName',[leg,' (Surf 25^{th}-75^{th})']); %Surf
+        set(fig2,'FaceAlpha', config.alph);
+        uistack(fig2,'bottom');
+    end
+    
+    end
+
+end
+
 
 if config.plotmodel
     [xdata,ydata] = tfv_averaging(data(mod).date,data_to_plot(3,:),config);
@@ -558,12 +453,6 @@ if config.plotmodel
     if diagVar>0 % removes inital zero value (eg in diganostics)
         xdata(1:2) = NaN;
     end
-end
-
-if strcmpi(style,'matlab')
-    leg=master.ncfile(mod).legend;
-elseif strcmpi(style,'yaml')
-    leg=master.ncfile(mod).legend{1};
 end
 
 if config.plotmodel
@@ -587,53 +476,264 @@ if config.plotmodel
     end
 end
 
-%option to plot percentile band
-if config.plotmodel && config.isModelRange == 1
-    num_lims = length(config.pred_lims);
-    nn = (num_lims+1)/2;
-    if strcmpi(layer,'bottom') == 1
-    fig = fillyy(data(mod).date,data_to_plot(1,:),data_to_plot(2*nn-1,:),...
-        config.dimc,config.ncfile(mod).col_pal_color_bot(1,:));hold on
-    set(fig,'DisplayName',[leg,' (Bot Range)']); %Surf
-    set(fig,'FaceAlpha', config.alph);
-    hold on;
-    
-    for plim_i=2:(nn-1)
-        fig2 = fillyy(data(mod).date,data_to_plot(plim_i,:),...
-            data_to_plot(2*nn-plim_i,:),config.dimc.*0.9.^(plim_i-1),...
-            config.ncfile(mod).col_pal_color_bot(plim_i,:));
-        set(fig2,'HandleVisibility','off');
-        set(fig2,'FaceAlpha', config.alph);
+%  add field data if isvalidation
+if isvalidation && mod == 1
+    if ~isempty(sss)
         
+        site_string = ['     field: '];
+        agencyused = [];
+        for j = 1:length(sss)
+            if isfield(fdata.(sitenames{sss(j)}),loadname)
+                xdata_t = [];
+                ydata_t = [];
+                
+                if ~config.validation_raw
+%                     [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
+%                         get_field_at_depth_thresh(fdata.(sitenames{sss(j)}).(loadname).Date,...
+%                         fdata.(sitenames{sss(j)}).(loadname).Data,...
+%                         fdata.(sitenames{sss(j)}).(loadname).Depth,layer,config.depthTHRESH);
+                    [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
+                        get_field_at_depth(fdata.(sitenames{sss(j)}).(loadname).Date,...
+                        fdata.(sitenames{sss(j)}).(loadname).Data,...
+                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer);
+                else
+                    [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
+                        get_field_at_depth_raw_thresh(fdata.(sitenames{sss(j)}).(loadname).Date,...
+                        fdata.(sitenames{sss(j)}).(loadname).Data,...
+                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer,config.depthTHRESH);
+                end
+                
+                gfg = find(xdata_ta >= config.datearray(1) & xdata_ta <= config.datearray(end));
+                
+                if ~isempty(gfg)
+                    xdata_t = xdata_ta(gfg);
+                    ydata_t = ydata_ta(gfg);
+                    if ~config.validation_raw
+                        ydata_max_t = ydata_max_ta(gfg);
+                        ydata_min_t = ydata_min_ta(gfg);
+                    else
+                        ydata_max_t = [];
+                        ydata_min_t = [];
+                    end
+                end
+                
+                if ~isempty(xdata_t)
+                    if ~config.validation_raw
+                      %  [xdata_d,ydata_d] = process_daily(xdata_t,ydata_t);
+                        xdata_d =  xdata_t;
+                        ydata_d = ydata_t;
+                        [~,ydata_max_d] = process_daily(xdata_t,ydata_max_t);
+                        [~,ydata_min_d] = process_daily(xdata_t,ydata_min_t);
+                    else
+                        xdata_d =  xdata_t;
+                        ydata_d = ydata_t;
+                        ydata_max_d = [];
+                        ydata_min_d = [];
+                    end
+                    
+                    [ydata_d,c_units,isConv] = tfv_Unit_Conversion(ydata_d,loadname);
+                    [ydata_max_d,~,~] = tfv_Unit_Conversion(ydata_max_d,loadname);
+                    [ydata_min_d,~,~] = tfv_Unit_Conversion(ydata_min_d,loadname);
+                    
+                  %  save('testing_depth.mat','xdata_dt','xdata_d','ydata_dt','ydata_d','-mat','-v7.3');
+                    xdata_d=xdata_d(:);
+                    ydata_d=ydata_d(:);
+                    xdata_dt=[xdata_dt xdata_d'];
+                    ydata_dt=[ydata_dt ydata_d'];
+                    
+                    if isfield(fdata.(sitenames{sss(j)}).(loadname),'Agency')
+                        agency = fdata.(sitenames{sss(j)}).(loadname).Agency;
+                    else
+                        agency = 'Observations';
+                    end
+                    site_string = [site_string,' ',sitenames{sss(j)},'(',agency,'),'];
+                    
+                    % define symbols and colors for different agencies, for new sites simply add the 
+                    %   new agency names into the 'AgencyNameCollection' list in the 
+                    %   'marvl_sort_agency_information.m' script;
+                    [mface,mcolor,agencyname] = marvl_sort_agency_information(agency);
+                    agencyused = [agencyused;{agencyname}];
+                    
+                    if strcmpi(style,'matlab')
+                        edge_color=config.edge_color;
+                        colour=config.ncfile(mod).colour;
+                    elseif strcmpi(style,'yaml')
+                        edge_color{1}=config.edge_color(1,:);
+                        edge_color{2}=config.edge_color(2,:);
+                        colour{1}=config.ncfile(mod).colour(1,:);
+                        colour{2}=config.ncfile(mod).colour(2,:);
+                    end
+                    
+                    if config.plotvalidation
+                        fgf = sum(strcmpi(agencyused,agencyname));
+                        if strcmpi(layer,'bottom') == 1
+                        if fgf > 1
+                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
+                                edge_color{2},'markerfacecolor',...
+                                edge_color{2},'markersize',3,'HandleVisibility','off');hold on
+                            uistack(fp,'top');
+                            if config.validation_minmax
+                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                            end
+                            uistack(fp,'top');
+                        else
+                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
+                                edge_color{2},'markerfacecolor',edge_color{2},...
+                                'markersize',3,'displayname',[agency,' (Bot)']);hold on; %,' Surf'
+                            uistack(fp,'top');
+                            if config.validation_minmax
+                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                            end
+                            uistack(fp,'top');
+                        end
+                        
+                        else
+                        if fgf > 1
+                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
+                                edge_color{1},'markerfacecolor',...
+                                edge_color{1},'markersize',3,'HandleVisibility','off');hold on
+                            uistack(fp,'top');
+                            if config.validation_minmax
+                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                            end
+                            uistack(fp,'top');
+                        else
+                            fp = plot(xdata_d,ydata_d,mface,'markeredgecolor',...
+                                edge_color{1},'markerfacecolor',edge_color{1},...
+                                'markersize',3,'displayname',[agency,' (Surf)']);hold on; %,' Surf'
+                            uistack(fp,'top');
+                            if config.validation_minmax
+                                fp = plot(xdata_d,ydata_max_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                                fp = plot(xdata_d,ydata_min_d,'+','color',[0.6 0.6 0.6],...
+                                    'HandleVisibility','off');hold on
+                            end
+                            uistack(fp,'top');
+                        end
+                            
+                        end
+                        
+                        if config.isYlim
+                            if ~isempty(config.cAxis(var).value)
+                                ggg = find(ydata_d > config.cAxis(var).value(2));
+                                
+                                if ~isempty(ggg)
+                                    if strcmpi(layer,'bottom') == 1
+                                        agencyused = [agencyused;{'Outside Range (Bot)'}];
+                                        fgf = sum(strcmpi(agencyused,'Outside Range (Bot)'));
+                                    else
+                                        agencyused = [agencyused;{'Outside Range (Surf)'}];
+                                        fgf = sum(strcmpi(agencyused,'Outside Range (Surf)'));
+                                    end
+                                    rdata = [];
+                                    rdata(1:length(ggg),1) = config.cAxis(var).value(2);
+                                    hhh = find(xdata_d(ggg) >= config.datearray(1) & ...
+                                        xdata_d(ggg) <= config.datearray(end));
+                                    
+                                    if ~isempty(hhh)
+                                        if strcmpi(layer,'bottom') == 1
+                                        if fgf > 1
+                                            fp = plot(xdata_d(ggg),rdata,'b+',...
+                                                'markersize',4,'linewidth',1,'HandleVisibility','off');hold on
+                                            uistack(fp,'top');
+                                        else
+                                            fp = plot(xdata_d(ggg),rdata,'b+',...
+                                                'markersize',4,'linewidth',1,'displayname','Outside Range (Bot)');hold on
+                                            uistack(fp,'top');
+                                        end
+                                        else
+                                            if fgf > 1
+                                            fp = plot(xdata_d(ggg),rdata,'k+',...
+                                                'markersize',4,'linewidth',1,'HandleVisibility','off');hold on
+                                            uistack(fp,'top');
+                                            else
+                                            fp = plot(xdata_d(ggg),rdata,'k+',...
+                                                'markersize',4,'linewidth',1,'displayname','Outside Range (Surf)');hold on
+                                            uistack(fp,'top');
+                                            end
+                                        end
+                                        uistack(fp,'top');
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        if(strlength(site_string)>7)
+            disp(site_string)
+        end
+        clear site_string;
     end
-    
-        
-    else
-        
-        fig = fillyy(data(mod).date,data_to_plot(1,:),data_to_plot(2*nn-1,:),...
-        config.dimc,config.ncfile(mod).col_pal_color_surf(1,:));hold on
-    set(fig,'DisplayName',[leg,' (Surf Range)']); %Surf
-    set(fig,'FaceAlpha', config.alph);
-    hold on;
-    
-    for plim_i=2:(nn-1)
-        fig2 = fillyy(data(mod).date,data_to_plot(plim_i,:),...
-            data_to_plot(2*nn-plim_i,:),config.dimc.*0.9.^(plim_i-1),...
-            config.ncfile(mod).col_pal_color_surf(plim_i,:));
-        set(fig2,'HandleVisibility','off');
-        set(fig2,'FaceAlpha', config.alph);
-        
-    end
-    
-    end
-
 end
 
 if config.add_error && mod==1
     if (exist('xdata_dt','var') && ~isempty(xdata_dt))
         
         disp('find field data ...');
-        alldayso=floor(xdata_dt);
+        
+        if strcmpi(config.scoremethod, 'range') == 1
+		
+		alldayso=floor(xdata_dt);
+       % unidayso=unique(alldayso);
+       % obsData(:,1)=unidayso;
+        
+       % for uuo=1:length(unidayso)
+       %     tmpinds=find(alldayso==unidayso(uuo));
+       %     tmpydatatt=ydata_dt(tmpinds);
+       %     obsData(uuo,2)=mean(tmpydatatt(~isnan(tmpydatatt)));
+       %     clear tmpydatatt;
+       % end
+        
+            alldays=floor(data(mod).date); 
+            simrange=data_to_plot; %(3,:)
+       %     unidays=unique(alldays);
+            inc=1;
+            MatchedData=[];
+            for uu=1:length(alldayso)
+                tmpinds=find(alldays==alldayso(uu));
+                if ~isempty(tmpinds)
+                    tmprange0=simrange(:,tmpinds);
+                    tmprange=sort(tmprange0(:));
+               % tmprange=mean(simrange(:,tmpinds),2);
+               % tmpobs=obsData(uu,2);
+               tmpobs=ydata_dt(uu);
+                
+                if (isnan(tmpobs) || (tmpobs<=tmprange(end) && tmpobs>=tmprange(1)))
+                   % simData(uu,2)=tmpobs;
+                    tmpsim=tmpobs;
+                else
+                    tmpdiff=abs(tmprange-tmpobs);
+                    tmpind=find(tmpdiff==min(tmpdiff));
+                   % simData(uu,2)=tmprange(tmpind(1));
+                   tmpsim=tmprange(tmpind(1));
+                    
+                end
+             %   else
+             %       simData(uu,2)=NaN;
+             MatchedData(inc,2)=tmpobs;
+             MatchedData(inc,3)=tmpsim;
+             inc=inc+1;
+                 end
+             %   simData(uu,1)=unidayso(uu);
+                
+            end
+          %  [v, loc_obs, loc_sim] = intersect(obsData(:,1), simData(:,1));
+          %  MatchedData = [v obsData(loc_obs,2) simData(loc_sim,2)];
+          %save('matcheddata.mat','MatchedData','-mat','-v7.3');
+        else
+		alldayso=floor(xdata_dt);
         unidayso=unique(alldayso);
         obsData(:,1)=unidayso;
         
@@ -644,35 +744,6 @@ if config.add_error && mod==1
             clear tmpydatatt;
         end
         
-        if strcmpi(config.scoremethod, 'range') == 1
-            alldays=floor(data(mod).date); 
-            simrange=data_to_plot; %(3,:)
-            unidays=unique(alldays);
-            
-            for uu=1:length(unidayso)
-                tmpinds=find(alldays==unidayso(uu));
-                if ~isempty(tmpinds)
-                tmprange=mean(simrange(:,tmpinds),2);
-                tmpobs=obsData(uu,2);
-                
-                if (isnan(tmpobs) || (tmpobs<=tmprange(end) && tmpobs>=tmprange(1)))
-                    simData(uu,2)=tmpobs;
-                else
-                    tmpdiff=abs(tmprange-tmpobs);
-                    tmpind=find(tmpdiff==min(tmpdiff));
-                    simData(uu,2)=tmprange(tmpind(1));
-                    
-                end
-                else
-                    simData(uu,2)=NaN;
-                 end
-                simData(uu,1)=unidayso(uu);
-                
-            end
-            [v, loc_obs, loc_sim] = intersect(obsData(:,1), simData(:,1));
-            MatchedData = [v obsData(loc_obs,2) simData(loc_sim,2)];
-
-        else
             alldays=floor(xdata);
             unidays=unique(alldays);
             simData(:,1)=unidays;
@@ -684,6 +755,7 @@ if config.add_error && mod==1
             
             [v, loc_obs, loc_sim] = intersect(obsData(:,1), simData(:,1));
             MatchedData = [v obsData(loc_obs,2) simData(loc_sim,2)];
+           % save('matcheddata_median.mat','MatchedData','-mat','-v7.3');
         end
         clear simData obsData v loc* alldays unidays
         clear xdata_d ydata_d
@@ -741,15 +813,19 @@ if isvalidation
                 ydata_t = [];
                 
                 if ~config.validation_raw
+%                     [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
+%                         get_field_at_depth_thresh(fdata.(sitenames{sss(j)}).(loadname).Date,...
+%                         fdata.(sitenames{sss(j)}).(loadname).Data,...
+%                         fdata.(sitenames{sss(j)}).(loadname).Depth,layer,config.depthTHRESH);
                     [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
                         get_field_at_depth(fdata.(sitenames{sss(j)}).(loadname).Date,...
                         fdata.(sitenames{sss(j)}).(loadname).Data,...
-                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer);
+                        fdata.(sitenames{sss(j)}).(loadname).Depth);
                 else
                     [xdata_ta,ydata_ta,ydata_max_ta,ydata_min_ta] = ...
-                        get_field_at_depth_raw(fdata.(sitenames{sss(j)}).(loadname).Date,...
+                        get_field_at_depth_raw_thresh(fdata.(sitenames{sss(j)}).(loadname).Date,...
                         fdata.(sitenames{sss(j)}).(loadname).Data,...
-                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer);
+                        fdata.(sitenames{sss(j)}).(loadname).Depth,layer,config.depthTHRESH);
                 end
                 
                 gfg = find(xdata_ta >= config.datearray(1) & xdata_ta <= config.datearray(end));

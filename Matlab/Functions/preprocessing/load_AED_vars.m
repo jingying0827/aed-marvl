@@ -7,6 +7,26 @@ switch loadname
         tra = tfv_readnetcdf(ncfile(mod).name,'names',{'TRACE_1'});
         rawdata.data.OXYPC = tra.TRACE_1 ./ oxy.WQ_AED_OXYGEN_OXY;
         clear tra oxy
+    case 'TNTP'
+        oxy = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_DIAG_TOT_TP'});
+        tra = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_DIAG_TOT_TN'});
+        rawdata.data.TNTP = tra.WQ_DIAG_TOT_TN ./ oxy.WQ_DIAG_TOT_TP;
+        rawdata.data.TNTP(isnan(rawdata.data.TNTP))=16;
+        clear tra oxy
+    case 'PONDON'
+        oxy = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_OGM_DON'});
+        tra = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_OGM_PON'});
+        rawdata.data.PONDON = tra.WQ_OGM_PON ./ oxy.WQ_OGM_DON;
+        rawdata.data.PONDON(isnan(rawdata.data.PONDON))=1;
+        clear tra oxy
+    case 'DINDIP'
+        oxy = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_PHS_FRP'});
+        tra = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_NIT_NIT'});
+        tra2 = tfv_readnetcdf(ncfile(mod).name,'names',{'WQ_NIT_AMM'});
+        
+        rawdata.data.DINDIP = (tra.WQ_NIT_NIT+tra2.WQ_NIT_AMM) ./ oxy.WQ_PHS_FRP;
+        rawdata.data.DINDIP(isnan(rawdata.data.DINDIP))=16;
+        clear tra tra2 oxy
     case 'WindSpeed'
         
         oxy = tfv_readnetcdf(ncfile(mod).name,'names',{'W10_x';'W10_y'});clear functions

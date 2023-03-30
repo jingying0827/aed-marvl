@@ -6,20 +6,38 @@ function [errorMatrix,T,str] = cal_model_skills(MatchedData,config,shp,site,load
             SkillNames={};
             SkillScores={};
             
+          %  if strcmpi(config.scoremethod, 'range') == 1
+          %      MatchedData_obs=;
+                
+          %  else
+            
             if (exist('MatchedData','var') && ~isempty(MatchedData))
                 MatchedData_obs=[MatchedData_obs, MatchedData(:,2)];
                 MatchedData_sim=[MatchedData_sim, MatchedData(:,3)];
             end
+          %  end
 %             if (exist('MatchedData_bottom','var') && ~isempty(MatchedData_bottom))
 %                 MatchedData_obs=[MatchedData_obs', MatchedData_bottom(:,2)'];
 %                 MatchedData_sim=[MatchedData_sim', MatchedData_bottom(:,3)'];
 %             end
           %  clear MatchedData_surf MatchedData_bottom
             
-            MatchedData_obs(isnan(MatchedData_obs))=mean(MatchedData_obs(~isnan(MatchedData_obs)));
-            MatchedData_obs(MatchedData_obs<0)=mean(MatchedData_obs);
-            ind0=(MatchedData_obs>10*(mean(MatchedData_obs)));
-            MatchedData_obs(ind0)=mean(MatchedData_obs(~ind0));
+%            MatchedData_obs(isnan(MatchedData_obs))=mean(MatchedData_obs(~isnan(MatchedData_obs)));
+%            MatchedData_obs(MatchedData_obs<0)=mean(MatchedData_obs);
+%            ind0=(MatchedData_obs>10*(mean(MatchedData_obs)));
+%            MatchedData_obs(ind0)=mean(MatchedData_obs(~ind0));
+			
+%			MatchedData_sim(isnan(MatchedData_sim))=mean(MatchedData_sim(~isnan(MatchedData_sim)));
+%            MatchedData_sim(MatchedData_sim<0)=mean(MatchedData_sim);
+            ind1=~isnan(MatchedData_obs);
+			MatchedData_obs=MatchedData_obs(ind1);
+			MatchedData_sim=MatchedData_sim(ind1);
+			
+			ind2=~isnan(MatchedData_sim);
+			MatchedData_obs=MatchedData_obs(ind2);
+			MatchedData_sim=MatchedData_sim(ind2);
+			
+            
             
             if length(MatchedData_obs)>config.obsTHRESH
                 
@@ -115,6 +133,8 @@ function [errorMatrix,T,str] = cal_model_skills(MatchedData,config,shp,site,load
                 errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).MEF=NaN;
             end
             T = table(SkillNames',SkillScores','VariableNames',{'Skils','Scores'}); 
+            errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).rawOBS=MatchedData_obs;
+            errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).rawSIM=MatchedData_sim;
    end
         
    

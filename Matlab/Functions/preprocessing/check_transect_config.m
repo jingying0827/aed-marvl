@@ -2,11 +2,6 @@ function config=check_transect_config(config)
 
 
 % checking the time series plot configuration file
-% allconfig=fieldnames(config);
-
-if ~isfield(config,'add_vdata')
-    config.add_vdata=0;
-end
 
 if ~isfield(config,'isHTML')
     config.isHTML=1;
@@ -57,7 +52,7 @@ if ~isfield(config,'start_plot_ID')
 end
 
 if ~isfield(config,'end_plot_ID')
-    config.end_plot_ID=length(config.varname);
+    config.end_plot_ID=size(MARVLs.master.varname,1);
 end
 
 if ~isfield(config,'validation_raw')
@@ -66,10 +61,6 @@ else
     if config.validation_raw==1
         config.validation_minmax = 0;
     end
-end
-
-if ~isfield(config,'end_plot_ID')
-    config.end_plot_ID=length(config.varname);
 end
 
 if ~isfield(config,'visible')
@@ -93,21 +84,21 @@ end
 config.max_depth = 5000;
 
 if ~isfield(config,'depth_range')
-    config.depth_range=[0.5 config.max_depth];
+    config.depth_range=[0 config.max_depth];
 end
 
 if ~isfield(config,'plotvalidation')
     config.plotvalidation=0;
 end
 
-if ~isfield(config,'isSaveErr')
-    config.isSaveErr=0;
-end
-
 if config.plotmodel==1 && config.plotvalidation==0
     config.add_error = 0;
 end
 
+
+if ~isfield(config,'add_vdata')
+    config.add_vdata=0;
+end
 %%
 if ~isfield(config,'add_trigger_values')
     config.add_trigger_values=0;
@@ -158,7 +149,7 @@ if ~isfield(config,'alph')
 end
 
 if ~isfield(config,'isSurf')
-    config.isSurf=0;
+    config.isSurf=1;
 end
 
 if ~isfield(config,'plotvalidation')
@@ -195,4 +186,55 @@ end
 
 config.isConv = 0;
 
+
+if ~isfield(config,'pred_lims')
+    config.pred_lims=[0.05,0.25,0.5,0.75,0.95];
+end
+
+
+if ~isfield(config,'dimc')
+    config.dimc=[0.9 0.9 0.9];
+end
+
+
+if ~isfield(config,'alph')
+    config.alph=0.5;
+end
+
+
+if ~isfield(config,'isGridon')
+    config.isGridon = 1;
+end
+
+if ~isfield(config,'istitled')
+    config.istitled = 1;
+end
+
+if ~isfield(config,'isylabel')
+    config.isylabel = 1;
+end
+
+if ~isfield(config,'islegend')
+    config.islegend = 1;
+end
+
+if ~isfield(config,'isYlim')
+    config.isYlim = 0;
+end
+
+if ~isfield(config,'dimensions')
+    config.dimensions=[20 10];
+end
+
+if ~isfield(config,'binfielddata')
+    config.binfielddata=1;
+end
+
+if ~isfield(config,'binradius')
+    config.binradius=0.5;
+end
+
+if ~isfield(config,'linedist')
+    config.linedist=500;
+end
 end
