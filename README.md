@@ -26,20 +26,18 @@ High-level systematic assessment of water quality response of to environmental f
 The plotting functions have been tested within several case studies, including Coorong Lagoon, Cockburn Sound, and Lake Erie, and  examples are included in the current repository. However, MARVL is still in its developing phase. We are expecting feedbacks for us to improve the user experience, as well as functionalities.
 
 ## Repository Organisation
-- `Common`: place holder for common files such as unit conversion and agency information;
-- `Matlab`: matlab plotting scripts and libraries for MARVL;
-- `Project`: site-specific configurations and recommended place for plotting results;
-- `R`: place holder for future development in R environment;
-- `Documents`: place holder for documenting MARVL science and user instructions;
+- `docs`: place holder for documenting MARVL science and user instructions;
+- `sources`: matlab plotting scripts and libraries for MARVL;
+- `examples`: site-specific configurations and recommended place for plotting results, to be updated;
 
 ## Execution Instruction
-- Colone the `csiem-marvl` repository onto local computer
-- Open Matlab (version 2020 or later versions), go to the local `csiem-marvl` folder and  add the paths to tools/libraries by entering
+- Colone the `aed-marvl` repository onto local computer
+- Open Matlab (version 2020 or later versions), go to the local `aed-marvl` folder and  add the paths to tools/libraries by entering
  ```
  addpath(genpath('./'))
  ```
-- Go to `csiem-marvl/{your project}/` folder, edit the `MARVL.m` to configure the plots (use the 'MARVL.m' under other project folder as templates);
-- Under the `csiem-marvl/{your project}/` path, start the plotting by entering
+- Go to `aed-marvl/{your project}/` folder, edit the `MARVL.m` to configure the plots (use the 'MARVL.m' under example folder as templates);
+- Under the `aed-marvl/{your project}/` path, start the plotting by entering
  ```
   run_AEDmarvl('./MARVL.m','matlab')
  ```
@@ -49,5 +47,5 @@ The plotting functions have been tested within several case studies, including C
  ```
 
 ## MARVL Configuration
-- The MARVL user instruction documentation is available in Documents/MARVL user instruction.docx
+- The MARVL user instruction documentation is available in docs/MARVL user instruction.docx
  
