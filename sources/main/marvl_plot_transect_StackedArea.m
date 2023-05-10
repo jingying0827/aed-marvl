@@ -10,7 +10,7 @@ ncfile=master.ncfile;
 % load in and check configurations
 %st = dbstack;
 
-config=check_transect_config(config);
+config=check_transectSA_config(config);
 def=config;
 
 %--------------------------------------------------------------------------
