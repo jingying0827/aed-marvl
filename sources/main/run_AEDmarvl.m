@@ -38,6 +38,8 @@ for modules=1:length(master.modules)
         marvl_plot_sheet(MARVLs);
     elseif strcmpi(module,'curtain')
         marvl_plot_curtain(MARVLs);
+    elseif strcmpi(module,'boxchart')
+        marvl_plot_boxchart(MARVLs,style);
     else
         msg=['Error: module of ',module,' is not recognized'];
         error(msg);

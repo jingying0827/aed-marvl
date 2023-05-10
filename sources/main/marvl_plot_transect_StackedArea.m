@@ -113,15 +113,22 @@ for tim = 1:length(def.pdates)
     % legpos = get(leg,'position');
     
     % tailor x axis and label
-    xlim(def.xlim);
+    %xlim(def.xlim);
     
-    if ~isempty(def.xticks)
-        set(gca,'xtick',def.xticks,'xticklabel',def.xticks);
-    end
+        if def.xtickManual == 1
+                    set(gca,'xlim',def.xlim,'XTick',def.xticks,'XTickLabel',def.xticklabels,'TickDir','out');
+                else
+                    set(gca,'xlim',def.xlim,'XTick',def.xticks);
+                    xlabel(def.xlabel,'fontsize',master.xlabelsize,'FontWeight','bold','color','k','FontName',master.font);
+        end
 
-    text(0.5,-0.1,def.xlabel,'fontsize',master.xlabelsize,...
-        'color',[0.4 0.4 0.4],'horizontalalignment','center','units','normalized');
-    
+%     if ~isempty(def.xticks)
+%         set(gca,'xtick',def.xticks,'xticklabel',def.xticks);
+%     end
+% 
+%     text(0.5,-0.1,def.xlabel,'fontsize',master.xlabelsize,...
+%         'color',[0.4 0.4 0.4],'horizontalalignment','center','units','normalized');
+%     
     % tailor y axis and label
     if ~isempty(def.cAxis(1).value)
         ylim(def.cAxis(1).value);

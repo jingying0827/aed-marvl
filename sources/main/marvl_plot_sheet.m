@@ -26,11 +26,18 @@ faces = dat.cell_node';
 %--% Fix the triangles
 faces(faces(:,4)== 0,4) = faces(faces(:,4)== 0,1);
 
+if strcmpi(config.style,'m_map') == 1
+    
+    LONG=vert(:,1);LAT=vert(:,2);
+    [X,Y]=m_ll2xy(LONG,LAT);
+    vert(:,1)=X;vert(:,2)=Y;
+end
+
 if strcmpi(config.plotdepth{1},'bottom') == 1
     cells(1:length(dat.idx3)-1) = dat.idx3(2:end) - 1;
     cells(length(dat.idx3)) = length(dat.idx3);
 else
-    cells=dat.(loadname)(dat.idx3(dat.idx3 > 0));
+    cells=dat.idx3(dat.idx3 > 0);
 end
 
 ts=find(abs(timesteps-def.datearray(1))==min(abs(timesteps-def.datearray(1))));
@@ -66,6 +73,10 @@ for var = config.start_plot_ID:config.end_plot_ID
         
         open(hvid);
         
+        if strcmpi(config.style,'m_map') == 1
+            m_proj('miller','lon',config.xlim,'lat',config.ylim);
+            hold on;
+        end
         
         % define time
         first_plot = 1;
@@ -106,30 +117,39 @@ for var = config.start_plot_ID:config.end_plot_ID
                     'SpecularStrength',.9,'SpecularExponent',25,...
                     'BackFaceLighting','unlit');
                 
-                caxis(def.cAxis(1).value);
+                caxis(def.cAxis(var).value);
                 colormap(config.colormap);
                 cb = colorbar;
                 
-                set(cb,'position',[0.85 0.12 0.01 0.45],...
-                    'units','normalized','ycolor','k');
-                
-                colorTitleHandle = get(cb,'Title');
-                set(colorTitleHandle,'String',c_units);
-                axis equal;
-                
-                if config.isAxison
-                    axis on;
-                    xlim=get(gca,'xlim');
-                    set(gca,'XTick',xlim(1):(xlim(2)-xlim(1))/3:xlim(2));
-                    ylim=get(gca,'ylim');
-                    set(gca,'YTick',ylim(1):(ylim(2)-ylim(1))/3:ylim(2));
-                    ax = ancestor(gca, 'axes');
-                    ax.XAxis.Exponent = 0;
-                    xtickformat('%.0f');
-                    ax.YAxis.Exponent = 0;
-                    ytickformat('%.0f');
+                %   set(cb,'position',[0.85 0.12 0.01 0.45],...
+                %       'units','normalized','ycolor','k');
+                if strcmpi(config.style,'none') == 1
+                    colorTitleHandle = get(cb,'Title');
+                    set(colorTitleHandle,'String',c_units);
+                    axis equal;
+                    
+                    if ~isempty(config.xlim)
+                        set(gca,'xlim',config.xlim,'ylim',config.ylim);
+                    end
+                    
+                    if config.isAxison
+                        axis on;
+                        xlim=get(gca,'xlim');
+                        set(gca,'XTick',xlim(1):(xlim(2)-xlim(1))/3:xlim(2));
+                        ylim=get(gca,'ylim');
+                        set(gca,'YTick',ylim(1):(ylim(2)-ylim(1))/3:ylim(2));
+                        ax = ancestor(gca, 'axes');
+                        ax.XAxis.Exponent = 0;
+                        xtickformat('%.3f');
+                        ax.YAxis.Exponent = 0;
+                        ytickformat('%.3f');
+                    else
+                        axis off;
+                    end
+                    
                 else
-                    axis off;
+                    m_grid('box','fancy','tickdir','out');
+                    hold on;
                 end
                 
                 if isConv
@@ -208,7 +228,8 @@ for var = config.start_plot_ID:config.end_plot_ID
                     mkdir(img_dir);
                 end
                 img_name =[img_dir,datestr(timesteps(i),'yyyymmddHHMM'),'.png'];
-                saveas(gcf,img_name);
+               % saveas(gcf,img_name);
+                print(gcf,'-dpng',img_name,'-opengl');
             end
             clear data cdata
         end
@@ -230,7 +251,7 @@ for var = config.start_plot_ID:config.end_plot_ID
             tmpdata2(Depth2 == 0) = NaN;
         end
         cdata=mean(tmpdata2,2);
-       % clear tmpdata tmpdata2 Depth0 depth2 cdata0; 
+        % clear tmpdata tmpdata2 Depth0 depth2 cdata0;
         
         hfig = figure('visible','on','position',[304 166 config.resolution(1) config.resolution(2)]);
         set(gcf, 'PaperPositionMode', 'manual');
@@ -239,7 +260,12 @@ for var = config.start_plot_ID:config.end_plot_ID
         
         axes('position',[0.15 0.1 0.8 0.8]);
         
-        patFig = patch('faces',faces,'vertices',vert,'FaceVertexCData',cdata);shading flat
+        if strcmpi(config.style,'m_map') == 1
+            m_proj('miller','lon',config.xlim,'lat',config.ylim);
+            hold on;
+        end
+        
+        patFig = patch('faces',faces,'vertices',vert,'FaceVertexCData',cdata);shading flat;
         set(gca,'box','on');
         
         set(findobj(gca,'type','surface'),...
@@ -248,30 +274,40 @@ for var = config.start_plot_ID:config.end_plot_ID
             'SpecularStrength',.9,'SpecularExponent',25,...
             'BackFaceLighting','unlit');
         
-        caxis(def.cAxis(1).value);
+        %   caxis(def.cAxis(1).value);
         colormap(config.colormap);
         cb = colorbar;
+        caxis(def.cAxis(var).value);
         
-        set(cb,'position',[0.85 0.12 0.01 0.45],...
-            'units','normalized','ycolor','k');
-        
-        colorTitleHandle = get(cb,'Title');
-        set(colorTitleHandle,'String',c_units);
-        axis equal;
-        
-        if config.isAxison
-            axis on;
-            xlim=get(gca,'xlim');
-            set(gca,'XTick',xlim(1):(xlim(2)-xlim(1))/3:xlim(2));
-            ylim=get(gca,'ylim');
-            set(gca,'YTick',ylim(1):(ylim(2)-ylim(1))/3:ylim(2));
-            ax = ancestor(gca, 'axes');
-            ax.XAxis.Exponent = 0;
-            xtickformat('%.0f');
-            ax.YAxis.Exponent = 0;
-            ytickformat('%.0f');
+        if strcmpi(config.style,'none') == 1
+            set(cb,'position',[0.85 0.12 0.01 0.45],...
+                'units','normalized','ycolor','k');
+            
+            colorTitleHandle = get(cb,'Title');
+            set(colorTitleHandle,'String',c_units);
+            axis equal;
+            if ~isempty(config.xlim)
+                set(gca,'xlim',config.xlim,'ylim',config.ylim);
+            end
+            
+            if config.isAxison
+                axis on;
+                xlim=get(gca,'xlim');
+                set(gca,'XTick',xlim(1):(xlim(2)-xlim(1))/3:xlim(2));
+                ylim=get(gca,'ylim');
+                set(gca,'YTick',ylim(1):(ylim(2)-ylim(1))/3:ylim(2));
+                ax = ancestor(gca, 'axes');
+                ax.XAxis.Exponent = 0;
+                xtickformat('%.3f');
+                ax.YAxis.Exponent = 0;
+                ytickformat('%.3f');
+            else
+                axis off;
+            end
+            
         else
-            axis off;
+            m_grid('box','fancy','tickdir','out');
+            hold on;
         end
         
         if isConv
@@ -288,8 +324,8 @@ for var = config.start_plot_ID:config.end_plot_ID
             end
         end
         
-        title([title_str,' from ', datestr(ts,'dd/mmm/yyyy'),...
-            ' to ',datestr(tf,'dd/mmm/yyyy')],...
+        title([title_str,': ', datestr(def.datearray(1),'dd/mmm/yyyy'),...
+            ' - ',datestr(def.datearray(2),'dd/mmm/yyyy')],...
             'Units','Normalized',...
             'Fontname',master.font,...
             'Fontsize',master.titlesize,...
@@ -298,9 +334,10 @@ for var = config.start_plot_ID:config.end_plot_ID
         if ~exist(img_dir,'dir')
             mkdir(img_dir);
         end
-        img_name =[img_dir,loadname,' ', datestr(ts,'dd-mmm-yyyy'),...
-            ' to ',datestr(tf,'dd-mmm-yyyy'),'.png'];
-        saveas(gcf,img_name);
+        img_name =[img_dir,loadname,' ', datestr(def.datearray(1),'dd-mmm-yyyy'),...
+            ' to ',datestr(def.datearray(2),'dd-mmm-yyyy'),'.png'];
+       % saveas(gcf,img_name);
+        print(gcf,'-dpng',img_name,'-opengl');
     end
     
 end

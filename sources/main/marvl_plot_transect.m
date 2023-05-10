@@ -130,11 +130,19 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
 
         % tailor x axis and label
-        xlim(def.xlim);
+        %xlim(def.xlim);
         
-        if ~isempty(def.xticks)
-            set(gca,'xtick',def.xticks,'xticklabel',def.xticks,'fontsize',6);
-        end
+		if def.xtickManual == 1
+                    set(gca,'xlim',def.xlim,'XTick',def.xticks,'XTickLabel',def.xticklabels,'TickDir','out');
+                else
+                    set(gca,'xlim',def.xlim,'XTick',def.xticks);
+                    xlabel(def.xlabel,'fontsize',master.xlabelsize,'FontWeight','bold','color','k','FontName',master.font);
+
+                end
+				
+        %if ~isempty(def.xticks)
+        %    set(gca,'xtick',def.xticks,'xticklabel',def.xticks,'fontsize',6);
+        %end
 %         if config.add_shapefile_label
 %             dist(1,1) = 0;
 %             for gdg = 1:length(shp)
@@ -154,8 +162,6 @@ for var = config.start_plot_ID:config.end_plot_ID
 %             end
 %             set(gca,'XTickLabelRotation',90)
 %         end
-        text(0.5,-0.075,def.xlabel,'fontsize',master.xlabelsize,...
-            'color',[0.4 0.4 0.4],'horizontalalignment','center','units','normalized');
         
         % tailor y axis and label        
         if ~isempty(def.cAxis(var).value)
