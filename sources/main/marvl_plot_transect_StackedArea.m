@@ -14,7 +14,7 @@ config=check_transectSA_config(config);
 def=config;
 
 %--------------------------------------------------------------------------
-disp('plottfv_transect: START')
+disp('plottfv_transect_StackedArea: START')
 disp('')
 
 % load in model geometry (layers, depth etc)
@@ -58,14 +58,14 @@ end
 for tim = 1:length(def.pdates)
     for k = 1:length(config.thevars)
         rd(1).data.(config.thevars{k}) = raw(1).data(k).Val;
-        [data(1),c_units,isConv,ylab] = marvl_getmodelpolylinedata(rd(1).data,ncfile(1).name,shp,{config.thevars{k}},d_data,config,def,tim,1);
+        [data(1),c_units,isConv,ylab] = marvl_getmodelpolylinedata_dist(rd(1).data,ncfile(1).name,shp,{config.thevars{k}},d_data,config,def,tim,1);
         
         pData(:,k) = data(1).pred_lim_ts(3,:);
         clear rd;
     end
     
     if config.plotvalidation
-        [fielddata,fielddist] = marvl_getfielddata_boxregion(fdata,shp,config,def,loadname,tim);
+        [fielddata,fielddist] = marvl_getfielddata_boxregion_dist(fdata,shp,config,def,loadname,tim);
     end
     
     gcf=figure('visible',master.visible);

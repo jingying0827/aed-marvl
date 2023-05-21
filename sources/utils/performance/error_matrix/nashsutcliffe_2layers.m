@@ -60,7 +60,7 @@ ss = find(~isnan(MatchedData(:,2)) == 1);
     % this next call may or may not speed things up.
     clear v loc_obs loc_sim
     
-    [r c] = size(MatchedData); %#ok<NASGU>
+    [r c] = size(MatchedData); % #ok<NASGU>
 
     if r >= 2 
         E = MatchedData(ss,2) - MatchedData(ss,3);
@@ -68,12 +68,16 @@ ss = find(~isnan(MatchedData(:,2)) == 1);
         u = mean(MatchedData(ss,2));
         SSU = sum((MatchedData(ss,2) - u).^2);
 
-        NSout = 1 - SSE/SSU;
-    
-        if NSout < 0
+        if SSU<1e-30
+            NSout=NaN;
+        else
+            NSout = 1 - SSE/SSU;
+        end
+    %    disp(NSout)
+    %    if NSout < 0
             % model predictions are poor
             % warning('MATLAB:ScoreLTZero','model predictions are poor. Using the mean \n of observed data would be better.')
-        end
+    %    end
     else % cannot compute statistics
         error('MATLAB:divideByZero','Intesecting data resulted in too few elements to compute. \n Function has been terminated. If this is unexpected, \n check your index vectors of the two arrays.');
     end

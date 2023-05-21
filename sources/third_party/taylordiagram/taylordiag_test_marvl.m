@@ -52,15 +52,23 @@
 % set(axl(1).handle,'fontweight','normal');
 
 
-clear
-load taylordiag_egdata.mat
+clear all; close all;
+%load taylordiag_egdata.mat
+load errormatrix.mat;
 
-% Get statistics from time series:
-for ii = 2:size(BUOY,1)
-    C = allstats(BUOY(1,:),BUOY(ii,:));
-    statm(ii,:) = C(:,2);
-end
-statm(1,:) = C(:,1);
+obs=errorMatrix.CS03.SAL.rawOBS;
+sim=errorMatrix.CS03.SAL.rawSIM;
+
+%%
+
+statm=allstats_tailor(obs,sim);statm=statm';
+% 
+% % Get statistics from time series:
+% for ii = 2:size(BUOY,1)
+%     C = allstats(BUOY(1,:),BUOY(ii,:));
+%     statm(ii,:) = C(:,2);
+% end
+% statm(1,:) = C(:,1);
 
 % Plot:
 figure
@@ -69,23 +77,24 @@ iw=2;jw=3;
 alphab = 'ABCDEFG';
 
 subplot(iw,jw,2); 
-plot(BUOY');
+plot(obs);hold on;plot(sim);
+hold on;
 grid on,xlabel('time (day)');ylabel('heat fluxes (W/m^2)');
 title(sprintf('%s: These are the different time series of daily heat fluxes (W/m2)','A'),'fontweight','bold');
 
 subplot(iw,jw,5); hold on
 [pp tt axl] = taylordiag(squeeze(statm(:,2)),squeeze(statm(:,3)),squeeze(statm(:,4)),...
-            'tickRMS',[25:25:150],'titleRMS',0,'tickRMSangle',135,'showlabelsRMS',0,'widthRMS',1,...
-            'tickSTD',[25:25:250],'limSTD',250,...
-            'tickCOR',[-.9:.1:.9 .95 .99],'showlabelsCOR',1,'titleCOR',1);
+            'tickRMS',[0.0:0.1:0.3],'titleRMS',1,'tickRMSangle',135,'showlabelsRMS',0,'widthRMS',1,...
+            'tickSTD',[0.0:0.1:0.50],'limSTD',0.5,...
+            'tickCOR',[.1:.1:.9 .95 .99],'showlabelsCOR',1,'titleCOR',1,'npan',1);
 
 for ii = 1 : length(tt)
     set(tt(ii),'fontsize',9,'fontweight','bold')
     set(pp(ii),'markersize',12)
     if ii == 1
-        set(tt(ii),'String','Buoy');
+        set(tt(ii),'String','Obs');
     else
-        set(tt(ii),'String',alphab(ii-1));
+        set(tt(ii),'String','Mod');
     end
 end
 title(sprintf('%s: Taylor Diagram at CLIMODE Buoy','B'),'fontweight','bold');

@@ -21,7 +21,7 @@ unique_geo_face_cells = ...
 
 cells_idx2 = geo.cell_idx2(unique_geo_face_cells(1:end-1));
 
-subsample = cells_idx2(1:4:length(cells_idx2));
+subsample = cells_idx2(1:2:length(cells_idx2));
 
 geodata.X  = geo.cell_ctrd(1,subsample);
 geodata.Y = geo.cell_ctrd(2,subsample);

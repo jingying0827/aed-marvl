@@ -101,10 +101,20 @@ for var = config.start_plot_ID:config.end_plot_ID
             end
             
             if first_plot
-                hfig = figure('visible','on','position',[304 166 config.resolution(1) config.resolution(2)]);
-                set(gcf, 'PaperPositionMode', 'manual');
-                set(gcf, 'PaperUnits', 'centimeters');
-                set(gcf,'paperposition',[0.635 6.35 config.resolution(1)/80 config.resolution(2)/80]);
+                %    hfig = figure('visible','on','position',[304 166 config.resolution(1) config.resolution(2)]);
+                %    set(gcf, 'PaperPositionMode', 'manual');
+                %    set(gcf, 'PaperUnits', 'centimeters');
+                %    set(gcf,'paperposition',[0.635 6.35 config.resolution(1)/80 config.resolution(2)/80]);
+                
+                gcf=figure('visible',master.visible);
+                pos=get(gcf,'Position');
+                xSize = def.dimensions(1);
+                ySize = def.dimensions(2);
+                newPos3=(pos(3)+pos(4))*xSize/(xSize+ySize);
+                newPos4=(pos(3)+pos(4))*ySize/(xSize+ySize);
+                set(gcf,'Position',[pos(1) pos(2) newPos3 newPos4],'color','w');
+                set(0,'DefaultAxesFontName',master.font);
+                set(0,'DefaultAxesFontSize',master.fontsize);
                 
                 axes('position',[0.15 0.1 0.8 0.8]);
                 
@@ -120,12 +130,20 @@ for var = config.start_plot_ID:config.end_plot_ID
                 caxis(def.cAxis(var).value);
                 colormap(config.colormap);
                 cb = colorbar;
+                set(cb,'position',def.colorbarposition,...
+                    'units','normalized','ycolor','k','FontSize',master.fontsize-2);
+                if master.add_human
+                     bar_str=[regexprep(loadname_human,'_',' '),' (',c_units,')'];
+                    else
+                     bar_str=[regexprep(loadname,'_',' '),' (',c_units,')'];
+                end
+                set(get(cb,'ylabel'),'String',bar_str);
+                       
+                cbarrow;
                 
-                %   set(cb,'position',[0.85 0.12 0.01 0.45],...
-                %       'units','normalized','ycolor','k');
                 if strcmpi(config.style,'none') == 1
-                    colorTitleHandle = get(cb,'Title');
-                    set(colorTitleHandle,'String',c_units);
+                 %   colorTitleHandle = get(cb,'Title');
+                 %   set(colorTitleHandle,'String',c_units);
                     axis equal;
                     
                     if ~isempty(config.xlim)
@@ -155,42 +173,14 @@ for var = config.start_plot_ID:config.end_plot_ID
                 if isConv
                     if master.add_human
                         title_str=[regexprep(loadname_human,'_',' '),' (',c_units,')'];
-                        %                     text(0.1,0.9,[regexprep(loadname_human,'_',' '),' (',c_units,')'],...
-                        %                         'Units','Normalized',...
-                        %                         'Fontname',def.font,...
-                        %                         'Fontsize',16,...
-                        %                         'fontweight','Bold',...
-                        %                         'color','k');
-                        
                     else
                         title_str=[regexprep(loadname,'_',' '),' (',c_units,')'];
-                        %                     text(0.1,0.9,[regexprep(loadname,'_',' '),' (',c_units,')'],...
-                        %                         'Units','Normalized',...
-                        %                         'Fontname',def.font,...
-                        %                         'Fontsize',16,...
-                        %                         'fontweight','Bold',...
-                        %                         'color','k');
-                        
                     end
                 else
                     if config.add_human
                         title_str=[regexprep(loadname_human,'_',' '),' (model units)'];
-                        %                     text(0.1,0.9,[regexprep(loadname_human,'_',' '),' (model units)'],...
-                        %                         'Units','Normalized',...
-                        %                         'Fontname',def.font,...
-                        %                         'Fontsize',16,...
-                        %                         'fontweight','Bold',...
-                        %                         'color','k');
-                        
                     else
                         title_str=[regexprep(loadname,'_',' '),' '];
-                        %                     text(0.1,0.9,[regexprep(loadname,'_',' '),' '],...
-                        %                         'Units','Normalized',...
-                        %                         'Fontname',def.font,...
-                        %                         'Fontsize',16,...
-                        %                         'fontweight','Bold',...
-                        %                         'color','k');
-                        
                     end
                 end
                 
@@ -199,11 +189,6 @@ for var = config.start_plot_ID:config.end_plot_ID
                     'Fontname',master.font,...
                     'Fontsize',master.titlesize,...
                     'color','k');
-                %             txtDate = text(0.1,0.1,datestr(timesteps(i),'dd mmm yyyy HH:MM'),...
-                %                 'Units','Normalized',...
-                %                 'Fontname',def.font,...
-                %                 'Fontsize',16,...
-                %                 'color','k');
                 
                 first_plot = 0;
                 
@@ -211,7 +196,7 @@ for var = config.start_plot_ID:config.end_plot_ID
                 disp(['Plotting ',datestr(timesteps(i),'dd mmm yyyy HH:MM'),'...']);
                 set(patFig,'Cdata',cdata);
                 drawnow;
-                %   set(txtDate,'String',datestr(timesteps(i),'dd mmm yyyy HH:MM'));
+                
                 title([title_str,' at ', datestr(timesteps(i),'dd mmm yyyy HH:MM')],...
                     'Units','Normalized',...
                     'Fontname',master.font,...
@@ -220,7 +205,7 @@ for var = config.start_plot_ID:config.end_plot_ID
                 caxis(def.cAxis(1).value);
                 
             end
-            writeVideo(hvid,getframe(hfig));
+            writeVideo(hvid,getframe(gcf));
             
             if config.save_images
                 img_dir = [config.outputdirectory,loadname,'/'];
@@ -228,7 +213,7 @@ for var = config.start_plot_ID:config.end_plot_ID
                     mkdir(img_dir);
                 end
                 img_name =[img_dir,datestr(timesteps(i),'yyyymmddHHMM'),'.png'];
-               % saveas(gcf,img_name);
+                % saveas(gcf,img_name);
                 print(gcf,'-dpng',img_name,'-opengl');
             end
             clear data cdata
@@ -253,7 +238,7 @@ for var = config.start_plot_ID:config.end_plot_ID
         cdata=mean(tmpdata2,2);
         % clear tmpdata tmpdata2 Depth0 depth2 cdata0;
         
-        hfig = figure('visible','on','position',[304 166 config.resolution(1) config.resolution(2)]);
+        gcf = figure('visible','on','position',[304 166 config.resolution(1) config.resolution(2)]);
         set(gcf, 'PaperPositionMode', 'manual');
         set(gcf, 'PaperUnits', 'centimeters');
         set(gcf,'paperposition',[0.635 6.35 config.resolution(1)/80 config.resolution(2)/80]);
@@ -278,7 +263,7 @@ for var = config.start_plot_ID:config.end_plot_ID
         colormap(config.colormap);
         cb = colorbar;
         caxis(def.cAxis(var).value);
-        
+        cbarrow;
         if strcmpi(config.style,'none') == 1
             set(cb,'position',[0.85 0.12 0.01 0.45],...
                 'units','normalized','ycolor','k');
@@ -336,7 +321,7 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
         img_name =[img_dir,loadname,' ', datestr(def.datearray(1),'dd-mmm-yyyy'),...
             ' to ',datestr(def.datearray(2),'dd-mmm-yyyy'),'.png'];
-       % saveas(gcf,img_name);
+        % saveas(gcf,img_name);
         print(gcf,'-dpng',img_name,'-opengl');
     end
     

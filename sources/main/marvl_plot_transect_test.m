@@ -1,12 +1,12 @@
-function marvl_plot_transect_exceedance(MARVLs)
+%function marvl_plot_transect(MARVLs)
 
 %--------------------------------------------------------------------------
 disp('plot_transect: START');
 % 
-%clear; close all;
-%run('E:\database\AED-MARVl-v0.2\Examples\Cockburn\MARVL.m');
+clear; close all;
+run('E:\database\MARVL\examples\Cockburn_Sound\MARVL.m');
 master=MARVLs.master;
-config=MARVLs.transectExc;
+config=MARVLs.transect;
 
 ncfile=master.ncfile;
 % load in and check configurations
@@ -16,7 +16,7 @@ config=check_transect_config(config);
 def=config;
 %check_transect_config_vars_F;
 %--------------------------------------------------------------------------
-disp('plottfv_transect_exceedance: START')
+%disp('plottfv_transect: START')
 disp('')
 
 % load in model geometry (layers, depth etc)
@@ -29,16 +29,16 @@ shp = shaperead(config.polygon_file);
 
 % field data
 fdata = struct;
-isvalidation=0; %master.add_fielddata;
+isvalidation=master.add_fielddata;
 
 % if length(master.ncfile)>1
 %     isvalidation=0;
 % end
-% 
-% if isvalidation
-% field = load(master.fielddata_matfile);
-% fdata = field.(master.fielddata); clear field;
-% end
+
+if isvalidation
+field = load(master.fielddata_matfile);
+fdata = field.(master.fielddata); clear field;
+end
 
 % start plotting, loop through selected variables
 for var = config.start_plot_ID:config.end_plot_ID
@@ -68,23 +68,13 @@ for var = config.start_plot_ID:config.end_plot_ID
         
         % process model data
         for mod = 1:length(ncfile)
-            [data(mod),c_units,isConv,ylab] = marvl_getmodelpolylinedata_exceedance_dist(raw(mod).data,ncfile(mod).name,shp,{loadname},d_data,config,def,tim,mod,var);
-            NumThresh=length(config.thresh(var).value);
-                for ee=1:NumThresh
-                if ee==NumThresh
-                    pData(NumThresh-ee+1,:) = data(mod).exceed(ee,:);
-                    newLeg{NumThresh-ee+1,:}=config.thresh(var).legend{ee};
-                else
-                    pData(NumThresh-ee+1,:) = data(mod).exceed(ee,:)-data(mod).exceed(ee+1,:);
-                    newLeg{NumThresh-ee+1,:}=config.thresh(var).legend{ee};
-                end
-            end
+            [data(mod),c_units,isConv,ylab] = marvl_getmodelpolylinedata_dist(raw(mod).data,ncfile(mod).name,shp,{loadname},d_data,config,def,tim,mod);
         end
         
         % process field data
-%         if config.plotvalidation
-%             [fielddata,fielddist] = marvl_getfielddata_boxregion(fdata,shp,config,def,loadname,tim);
-%         end
+        if config.plotvalidation
+            [fielddata,fielddist] = marvl_getfielddata_boxregion_dist(fdata,shp,config,def,loadname,tim);
+        end
         
         gcf=figure('visible',master.visible);
         pos=get(gcf,'Position');
@@ -103,36 +93,56 @@ for var = config.start_plot_ID:config.end_plot_ID
         
         % plot median line and percentile bands
         for mod = 1:length(ncfile)
-            H = area(data(mod).dist,pData'*100);hold on;
+            plot(data(mod).dist,data(mod).pred_lim_ts(3,:),'color',config.ncfile(mod).colour,'linewidth',0.5,'DisplayName',[ncfile(mod).legend,' (Median)']);hold on
+            
+            num_lims = length(config.pred_lims);
+            nn = (num_lims+1)/2;
+                
+            if config.isRange
+                fig = fillyy(data(mod).dist,data(mod).pred_lim_ts(1,:),data(mod).pred_lim_ts(2*nn-1,:),def.dimc,config.ncfile(mod).col_pal_color(1,:));hold on;
+                set(fig,'DisplayName',[ncfile(mod).legend,' (Range 5^{th}-95^{th})']);
+                set(fig,'FaceAlpha', def.alph);
+                uistack(fig,'bottom');
+                hold on;
+                
+                for plim_i=2:(nn-1)
+                    fig2 = fillyy(data(mod).dist,data(mod).pred_lim_ts(plim_i,:),data(mod).pred_lim_ts(2*nn-plim_i,:),def.dimc.*0.9.^(plim_i-1),config.ncfile(mod).col_pal_color(plim_i,:));
+                   % set(fig2,'HandleVisibility','off');
+                    set(fig2,'DisplayName',[ncfile(mod).legend,' (Range 25^{th}-75^{th})']); %Surf
+                    set(fig2,'FaceAlpha', def.alph);
+                    uistack(fig2,'bottom');
+                end
+            end
         end
         
         % model legend
-        leg = legend(regexprep(newLeg,'_',' '));
+        leg = legend('show');
         set(leg,'location',def.rangelegend,'fontsize',master.legendsize);
         
         % add field data
-%         box_vars = [];
-%         if config.plotvalidation
-%             if ~isempty(fielddata)
-%                 h_box=boxplot(fielddata,fielddist,'positions',unique(fielddist),'color','k','plotstyle','compact');
-%                 box_vars = findall(gca,'Tag','Box');
-%                 set(h_box,'DisplayName','Field Data');
-%             end
-%         end
+        box_vars = [];
+        if config.plotvalidation
+            if ~isempty(fielddata)
+                h_box=boxplot(fielddata,fielddist,'positions',unique(fielddist),'color','k','plotstyle','compact');
+                box_vars = findall(gca,'Tag','Box');
+                set(h_box,'DisplayName','Field Data');
+            end
+        end
 
         % tailor x axis and label
-        xlim(def.xlim);
+        %xlim(def.xlim);
         
-        if def.xtickManual == 1
+		if def.xtickManual == 1
                     set(gca,'xlim',def.xlim,'XTick',def.xticks,'XTickLabel',def.xticklabels,'TickDir','out');
                 else
                     set(gca,'xlim',def.xlim,'XTick',def.xticks);
                     xlabel(def.xlabel,'fontsize',master.xlabelsize,'FontWeight','bold','color','k','FontName',master.font);
-        end
-                
- %       if ~isempty(def.xticks)
- %           set(gca,'xtick',def.xticks,'xticklabel',def.xticks,'fontsize',6);
- %       end
+
+                end
+				
+        %if ~isempty(def.xticks)
+        %    set(gca,'xtick',def.xticks,'xticklabel',def.xticks,'fontsize',6);
+        %end
 %         if config.add_shapefile_label
 %             dist(1,1) = 0;
 %             for gdg = 1:length(shp)
@@ -152,8 +162,6 @@ for var = config.start_plot_ID:config.end_plot_ID
 %             end
 %             set(gca,'XTickLabelRotation',90)
 %         end
-%        text(0.5,-0.075,def.xlabel,'fontsize',master.xlabelsize,...
-%            'color',[0.4 0.4 0.4],'horizontalalignment','center','units','normalized');
         
         % tailor y axis and label        
         if ~isempty(def.cAxis(var).value)
@@ -161,10 +169,10 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
         
         if master.add_human
-            ylabel([regexprep(loadname_human,'_',' '),' exccedance (%)'],...
+            ylabel([loadname_human,' (',c_units,')'],...
                 'fontsize',master.ylabelsize,'color',[0.4 0.4 0.4],'horizontalalignment','center');
         else
-            ylabel([ylab,' exccedance (%)'],...
+            ylabel([ylab,' (',c_units,')'],...
                 'fontsize',master.ylabelsize,'color',[0.4 0.4 0.4],'horizontalalignment','center');
         end
   
@@ -202,30 +210,30 @@ for var = config.start_plot_ID:config.end_plot_ID
             scatter(marker.Start,yx- yl_r,12,'V','filled','MarkerFaceColor','k','HandleVisibility','off');
         end
         
-%         % optional, add observation numbers
-%         if ~isempty(box_vars) && config.add_obs_num
-%             udist = unique(fielddist);
-%             yl = get(gca,'ylim');
-%             ryl = yl(2)-yl(1);
-%             offset = ryl * 0.03;
-%             
-%             for i = 1:length(udist)
-%                 if udist(i) < def.xlim(end)
-%                     sss = find(fielddist == udist(i));
-%                     mval = max(fielddata(sss));
-%                     mval = mval + offset;
-%                     text(gca,udist(i),mval,['n=',num2str(length(sss))],'fontsize',6,'horizontalalignment','center');
-%                 end
-%             end
-%         end
-%         
-%         % add field data legend
-%         if ~isempty(box_vars)
-%             ah1=axes('position',get(gca,'position'),'visible','off');
-%             lpos=get(leg,'position');
-%             newpos=[lpos(1)-0.01,lpos(2)-0.03,lpos(3),0.02];
-%             hLegend = legend(ah1,box_vars([1]), {'Field Data'},'location',def.boxlegend,'fontsize',6);
-%         end
+        % optional, add observation numbers
+        if ~isempty(box_vars) && config.add_obs_num
+            udist = unique(fielddist);
+            yl = get(gca,'ylim');
+            ryl = yl(2)-yl(1);
+            offset = ryl * 0.03;
+            
+            for i = 1:length(udist)
+                if udist(i) < def.xlim(end)
+                    sss = find(fielddist == udist(i));
+                    mval = max(fielddata(sss));
+                    mval = mval + offset;
+                    text(gca,udist(i),mval,['n=',num2str(length(sss))],'fontsize',6,'horizontalalignment','center');
+                end
+            end
+        end
+        
+        % add field data legend
+        if ~isempty(box_vars)
+            ah1=axes('position',get(gca,'position'),'visible','off');
+            lpos=get(leg,'position');
+            newpos=[lpos(1)-0.01,lpos(2)-0.03,lpos(3),0.02];
+            hLegend = legend(ah1,box_vars([1]), {'Field Data'},'location',def.boxlegend,'fontsize',6);
+        end
         
         box on;
 
@@ -236,15 +244,35 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
         
         finalname = [savedir,image_name];
-        print(gcf,finalname,'-opengl','-dpng');
+        finalnameEPS = [savedir,'eps/',image_name];
+      %  print(gcf,finalname,'-opengl','-dpng');
+        
+        if exist('filetype','var')
+            if strcmpi(filetype,'png')
+               % print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-opengl');
+                print(gcf,finalname,'-opengl','-dpng');
+            else
+                %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+              %  finalname_p2 = [savedir,'\eps\',final_sitename];
+                finalnameEPS=regexprep(finalnameEPS,'.png','.eps');
+                saveas(gcf,finalnameEPS,'epsc');
+                exportgraphics(gcf,regexprep(finalname,'.png','.jpg'),'Resolution',300);
+            end
+        else
+            %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+            finalnameEPS=regexprep(finalname,'.png','.eps');
+            saveas(gcf,finalnameEPS,'epsc');
+            exportgraphics(gcf,regexprep(finalname,'.png','.jpg'),'Resolution',300);
+        end
         
         close all force;
-        clear data;
+      %  clear data;
 
     end
     
     if config.isHTML
-        create_html_for_directory_onFly(savedir,loadname,config.htmloutput);
+      %  create_html_for_directory_onFly(savedir,loadname,config.htmloutput);
+        create_html_for_directory(config.outputdirectory,config.htmloutput);
     end
 end
 

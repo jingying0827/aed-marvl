@@ -37,7 +37,7 @@ function marvl_plot_timeseries(MARVLs,style)
 disp('plot_timeseries: START');
 % 
 % clear; close all;
-% run('E:\database\AED-MARVL-v0.4\Projects\Erie\MARVL.m');
+% run('E:\database\MARVL\examples\Cockburn_Sound\MARVL.m');
 master=MARVLs.master;
 config=MARVLs.timeseries;
 %style='matlab';
@@ -56,8 +56,13 @@ shp = shaperead(config.polygon_file);
     end
     
 % check and define sites for plotting
-[shp, sites]=refine_SHP(shp, config);
+%[shp, sites]=refine_SHP(shp, config);
 
+if config.plotAllsites == 0
+    sites=config.plotsite;
+else
+    sites=1:length(shp);
+end
 fdata = struct;
 isvalidation=master.add_fielddata;
 
@@ -83,7 +88,7 @@ for var = config.start_plot_ID:config.end_plot_ID
     
     if ~exist(savedir,'dir')
         mkdir(savedir);
-        mkdir([savedir,'eps/']);
+     %  mkdir([savedir,'eps/']);
     end
     
     % load in raw model data
@@ -277,10 +282,59 @@ for var = config.start_plot_ID:config.end_plot_ID
             if config.showSkill && ~isempty(skill_summary)
                 if ~isnan(errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).R)
                 hlp=get(leg,'Position');
-                dim=[hlp(1) 0.27 0.15 0.1];%[hlp(1)+0.025 0.25 0.15 0.1];
+                
+                if strcmpi(config.SkillStyle,'tailor')
+                dim=[hlp(1)-0.05 0.15 0.35 0.4];
+                
+                axes('Position',dim);
+                obs=errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).rawOBS;
+                sim=errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).rawSIM;
+                statm=allstats_tailor(obs,sim);statm=statm';
+                
+                std=statm(1,2);
+                
+                if std<0.01
+                    trmss=0:0.002:0.01;
+                else
+                    brp=1;
+                    for i=-2:5
+                        if std<10.^(i) && brp==1
+                            trmss=0:10.^(i)/5:10.^(i);
+                            brp=0;
+                        end
+                    end
+                end
+                
+                [pp tt axl] = taylordiag_marvl(squeeze(statm(:,2)),squeeze(statm(:,3)),squeeze(statm(:,4)),...
+            'tickRMS',trmss,'titleRMS',0,'tickRMSangle',135,'showlabelsRMS',0,'widthRMS',1,...
+            'tickSTD',trmss,'limSTD',max(trmss),...
+            'tickCOR',[.1:.1:.9 .95 .99],'showlabelsCOR',1,'titleCOR',1);
+        set(gca,'FontSize',5);
+
+for ii = 1 : length(tt)
+    set(tt(ii),'fontsize',5,'fontweight','bold')
+    set(pp(ii),'markersize',12)
+    if ii == 1
+        set(tt(ii),'String','Obs');
+    else
+        set(tt(ii),'String','Mod');
+    end
+end
+%title(sprintf('%s: Taylor Diagram at CLIMODE Buoy','B'),'fontweight','bold');
+
+tt = axl(2).handle;
+for ii = 1 : length(tt)
+    set(tt(ii),'fontsize',5,'fontweight','normal');
+end
+set(axl(1).handle,'fontweight','normal');
+
+                else
+                dim=[hlp(1)+0.025 0.25 0.15 0.1];    
                 ha=annotation('textbox',dim,'String',...
                     skill_summary,'FitBoxToText','on','FontName',master.font,'Interpreter','tex'); %'FixedWidth'
                 set(ha,'FontSize',master.legendsize);
+
+                end
                 end
             end
         end
@@ -295,19 +349,19 @@ for var = config.start_plot_ID:config.end_plot_ID
 
         finalname_p = [savedir,final_sitename];
         
-        if exist('filetype','var')
-            if strcmpi(filetype,'png')
+        if isfield(config,'filetype')
+            if strcmpi(config.filetype,'png')
                 print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-opengl');
             else
                 %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
-                finalname_p2 = [savedir,'\eps\',final_sitename];
-                saveas(gcf,finalname_p2,'epsc');
+              %  finalname_p2 = [savedir,'eps/',final_sitename];
+              %  saveas(gcf,finalname_p2,'epsc');
                 exportgraphics(gcf,regexprep(finalname_p,'.eps','.jpg'),'Resolution',300)
             end
         else
             %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
-            finalname_p2 = [savedir,'\eps\',final_sitename];
-            saveas(gcf,finalname_p2,'epsc');
+            finalname_p2 = [savedir,'eps/',final_sitename];
+          %  saveas(gcf,finalname_p2,'epsc');
             exportgraphics(gcf,regexprep(finalname_p,'.eps','.jpg'),'Resolution',300)
         end
         

@@ -4,7 +4,7 @@ function marvl_plot_transect(MARVLs)
 disp('plot_transect: START');
 % 
 %clear; close all;
-%run('E:\database\AED-MARVl-v0.2\Examples\Cockburn\MARVL.m');
+%run('E:\database\MARVL\examples\Cockburn_Sound\MARVL.m');
 master=MARVLs.master;
 config=MARVLs.transect;
 
@@ -68,12 +68,12 @@ for var = config.start_plot_ID:config.end_plot_ID
         
         % process model data
         for mod = 1:length(ncfile)
-            [data(mod),c_units,isConv,ylab] = marvl_getmodelpolylinedata(raw(mod).data,ncfile(mod).name,shp,{loadname},d_data,config,def,tim,mod);
+            [data(mod),c_units,isConv,ylab] = marvl_getmodelpolylinedata_dist(raw(mod).data,ncfile(mod).name,shp,{loadname},d_data,config,def,tim,mod);
         end
         
         % process field data
         if config.plotvalidation
-            [fielddata,fielddist] = marvl_getfielddata_boxregion(fdata,shp,config,def,loadname,tim);
+            [fielddata,fielddist] = marvl_getfielddata_boxregion_dist(fdata,shp,config,def,loadname,tim);
         end
         
         gcf=figure('visible',master.visible);
