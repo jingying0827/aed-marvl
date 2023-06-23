@@ -17,7 +17,7 @@ def=config;
 %check_transect_config_vars_F;
 %--------------------------------------------------------------------------
 %disp('plottfv_transect: START')
-disp('')
+disp('pre load')
 
 % load in model geometry (layers, depth etc)
 if config.plotmodel==1
@@ -25,6 +25,7 @@ if config.plotmodel==1
 end
 
 % load in shape file
+disp('reading shape')
 shp = shaperead(config.polygon_file);
 
 % field data
@@ -63,7 +64,7 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
     end
     
-    % looping through the dates to plot transects
+    %% looping through the dates to plot transects
     for tim = 1:length(config.pdates)
         
         % process model data
@@ -75,7 +76,7 @@ for var = config.start_plot_ID:config.end_plot_ID
         if config.plotvalidation
             [fielddata,fielddist] = marvl_getfielddata_boxregion_dist(fdata,shp,config,def,loadname,tim);
         end
-        
+
         gcf=figure('visible',master.visible);
         pos=get(gcf,'Position');
         xSize = def.dimensions(1);
@@ -93,25 +94,60 @@ for var = config.start_plot_ID:config.end_plot_ID
         
         % plot median line and percentile bands
         for mod = 1:length(ncfile)
-            plot(data(mod).dist,data(mod).pred_lim_ts(3,:),'color',config.ncfile(mod).colour,'linewidth',0.5,'DisplayName',[ncfile(mod).legend,' (Median)']);hold on
+            
+            if find(contains(config.plotdepth,'surface'))>0
+                disp('Surf');
+            plot(data(mod).dist,data(mod).pred_lim_ts(3,:),'color',config.ncfile(mod).colour{1,:},...
+                'linestyle',config.ncfile(mod).symbol{1},'linewidth',0.5,'DisplayName',[ncfile(mod).legend,' (Surf Median)']);hold on
             
             num_lims = length(config.pred_lims);
             nn = (num_lims+1)/2;
                 
             if config.isRange
-                fig = fillyy(data(mod).dist,data(mod).pred_lim_ts(1,:),data(mod).pred_lim_ts(2*nn-1,:),def.dimc,config.ncfile(mod).col_pal_color(1,:));hold on;
-                set(fig,'DisplayName',[ncfile(mod).legend,' (Range 5^{th}-95^{th})']);
+                fig = fillyy(data(mod).dist,data(mod).pred_lim_ts(1,:),data(mod).pred_lim_ts(2*nn-1,:),def.dimc,config.ncfile(mod).col_pal_color_surf(1,:));hold on;
+                set(fig,'DisplayName',[ncfile(mod).legend,' (Surf Range 5^{th}-95^{th})']);
                 set(fig,'FaceAlpha', def.alph);
                 uistack(fig,'bottom');
                 hold on;
                 
                 for plim_i=2:(nn-1)
-                    fig2 = fillyy(data(mod).dist,data(mod).pred_lim_ts(plim_i,:),data(mod).pred_lim_ts(2*nn-plim_i,:),def.dimc.*0.9.^(plim_i-1),config.ncfile(mod).col_pal_color(plim_i,:));
+                    fig2 = fillyy(data(mod).dist,data(mod).pred_lim_ts(plim_i,:),data(mod).pred_lim_ts(2*nn-plim_i,:),def.dimc.*0.9.^(plim_i-1),config.ncfile(mod).col_pal_color_surf(plim_i,:));
                    % set(fig2,'HandleVisibility','off');
-                    set(fig2,'DisplayName',[ncfile(mod).legend,' (Range 25^{th}-75^{th})']); %Surf
+                    set(fig2,'DisplayName',[ncfile(mod).legend,' (Surf Range 25^{th}-75^{th})']); %Surf
                     set(fig2,'FaceAlpha', def.alph);
                     uistack(fig2,'bottom');
                 end
+            end
+            
+            hold on;
+            end
+            
+            if find(contains(config.plotdepth,'bottom'))>0
+            disp('Bot');
+             plot(data(mod).dist,data(mod).pred_lim_tb(3,:),'color',config.ncfile(mod).colour{2,:},'linewidth',0.5,...
+                 'linestyle',config.ncfile(mod).symbol{2},'DisplayName',[ncfile(mod).legend,' (Bot Median)']);hold on
+            
+            num_lims = length(config.pred_lims);
+            nn = (num_lims+1)/2;
+                
+            if config.isRange
+                fig = fillyy(data(mod).dist,data(mod).pred_lim_tb(1,:),data(mod).pred_lim_tb(2*nn-1,:),def.dimc,config.ncfile(mod).col_pal_color_bot(1,:));hold on;
+                set(fig,'DisplayName',[ncfile(mod).legend,' (Bot Range 5^{th}-95^{th})']);
+                set(fig,'FaceAlpha', def.alph);
+                uistack(fig,'bottom');
+                hold on;
+                
+                for plim_i=2:(nn-1)
+                    fig2 = fillyy(data(mod).dist,data(mod).pred_lim_tb(plim_i,:),data(mod).pred_lim_tb(2*nn-plim_i,:),def.dimc.*0.9.^(plim_i-1),config.ncfile(mod).col_pal_color_bot(plim_i,:));
+                   % set(fig2,'HandleVisibility','off');
+                    set(fig2,'DisplayName',[ncfile(mod).legend,' (Bot Range 25^{th}-75^{th})']); %Surf
+                    set(fig2,'FaceAlpha', def.alph);
+                    uistack(fig2,'bottom');
+                end
+            end
+            
+            hold on;
+            
             end
         end
         
@@ -181,13 +217,15 @@ for var = config.start_plot_ID:config.end_plot_ID
         
                
         % add time label on top left
-        if config.isSurf
-            text(0.05,1.05,[datestr(def.pdates(tim).value(1),'dd/mm/yyyy'),' to ',datestr(def.pdates(tim).value(end),'dd/mm/yyyy'),': Surface'],'units','normalized',...
+%         if config.isSurf
+%             text(0.05,1.05,[datestr(def.pdates(tim).value(1),'dd/mm/yyyy'),' to ',datestr(def.pdates(tim).value(end),'dd/mm/yyyy'),': Surface'],'units','normalized',...
+%                 'fontsize',8,'color',[0.4 0.4 0.4]);
+%         else
+%             text(0.05,1.05,[datestr(def.pdates(tim).value(1),'dd/mm/yyyy'),' to ',datestr(def.pdates(tim).value(end),'dd/mm/yyyy'),': Bottom'],'units','normalized',...
+%                 'fontsize',8,'color',[0.4 0.4 0.4]);
+%         end
+        text(0.05,1.05,[datestr(def.pdates(tim).value(1),'dd/mm/yyyy'),' to ',datestr(def.pdates(tim).value(end),'dd/mm/yyyy')],'units','normalized',...
                 'fontsize',8,'color',[0.4 0.4 0.4]);
-        else
-            text(0.05,1.05,[datestr(def.pdates(tim).value(1),'dd/mm/yyyy'),' to ',datestr(def.pdates(tim).value(end),'dd/mm/yyyy'),': Bottom'],'units','normalized',...
-                'fontsize',8,'color',[0.4 0.4 0.4]);
-        end
         
         % optional, add trigger values
         if config.add_trigger_values
@@ -236,12 +274,14 @@ for var = config.start_plot_ID:config.end_plot_ID
         end
         
         box on;
-
-        if config.isSurf
-            image_name = [datestr(def.pdates(tim).value(1),'yyyy-mm-dd'),'_',datestr(def.pdates(tim).value(end),'yyyy-mm-dd'),'_Surface.png'];
-        else
-            image_name = [datestr(def.pdates(tim).value(1),'yyyy-mm-dd'),'_',datestr(def.pdates(tim).value(end),'yyyy-mm-dd'),'_Bottom.png'];
-        end
+% 
+%         if config.isSurf
+%             image_name = [datestr(def.pdates(tim).value(1),'yyyy-mm-dd'),'_',datestr(def.pdates(tim).value(end),'yyyy-mm-dd'),'_Surface.png'];
+%         else
+%             image_name = [datestr(def.pdates(tim).value(1),'yyyy-mm-dd'),'_',datestr(def.pdates(tim).value(end),'yyyy-mm-dd'),'_Bottom.png'];
+%         end
+        
+        image_name = [datestr(def.pdates(tim).value(1),'yyyy-mm-dd'),'_',datestr(def.pdates(tim).value(end),'yyyy-mm-dd'),'.png'];
         
         finalname = [savedir,image_name];
         finalnameEPS = [savedir,'eps/',image_name];

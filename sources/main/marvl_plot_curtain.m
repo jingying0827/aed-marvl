@@ -260,8 +260,8 @@ for var = config.start_plot_ID:config.end_plot_ID
             pos=get(gcf,'Position');
             xSize = def.dimensions(1);
             ySize = def.dimensions(2);
-            newPos3=(pos(3)+pos(4))*xSize/(xSize+ySize);
-            newPos4=(pos(3)+pos(4))*ySize/(xSize+ySize);
+            newPos3=(pos(3)+pos(4))*xSize/(xSize+ySize)*1.5;
+            newPos4=(pos(3)+pos(4))*ySize/(xSize+ySize)*1.5;
             set(gcf,'Position',[pos(1) pos(2) newPos3 newPos4],'color','w');
             set(0,'DefaultAxesFontName',master.font);
             set(0,'DefaultAxesFontSize',master.fontsize);

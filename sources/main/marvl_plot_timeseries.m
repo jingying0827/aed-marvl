@@ -284,7 +284,7 @@ for var = config.start_plot_ID:config.end_plot_ID
                 hlp=get(leg,'Position');
                 
                 if strcmpi(config.SkillStyle,'tailor')
-                dim=[hlp(1)-0.05 0.15 0.35 0.4];
+                dim=[hlp(1)-0.08 0.15 0.35 0.4];
                 
                 axes('Position',dim);
                 obs=errorMatrix.(regexprep(shp(site).Name,' ','_')).(loadname).rawOBS;
@@ -351,7 +351,7 @@ set(axl(1).handle,'fontweight','normal');
         
         if isfield(config,'filetype')
             if strcmpi(config.filetype,'png')
-                print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-opengl');
+                print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-r300');
             else
                 %saveas(gcf,regexprep(finalname_p,'.eps','.png'));
               %  finalname_p2 = [savedir,'eps/',final_sitename];
@@ -480,7 +480,7 @@ if config.plotmodel && config.isModelRange == 1
         
         fig = fillyy(data(mod).date,data_to_plot(1,:),data_to_plot(2*nn-1,:),...
         config.dimc,config.ncfile(mod).col_pal_color_surf(1,:));hold on
-    set(fig,'DisplayName',[leg,' (Surf 5^{th}-95^{th})']); %Surf
+    set(fig,'DisplayName',[leg,' (5^{th}-95^{th})']); %Surf
     set(fig,'FaceAlpha', config.alph);
     hold on;
     uistack(fig,'bottom');
@@ -490,7 +490,7 @@ if config.plotmodel && config.isModelRange == 1
             data_to_plot(2*nn-plim_i,:),config.dimc.*0.9.^(plim_i-1),...
             config.ncfile(mod).col_pal_color_surf(plim_i,:));hold on;
        % set(fig2,'HandleVisibility','off');
-        set(fig2,'DisplayName',[leg,' (Surf 25^{th}-75^{th})']); %Surf
+        set(fig2,'DisplayName',[leg,' (25^{th}-75^{th})']); %Surf
         set(fig2,'FaceAlpha', config.alph);
         uistack(fig2,'bottom');
     end
@@ -525,7 +525,7 @@ if config.plotmodel
     else
 
     plot(xdata,ydata,'color',colour{1},'linewidth',0.5,...
-        'DisplayName',[leg,' (Surf Median)'],...
+        'DisplayName',[leg,' (Median)'],...
         'linestyle',config.ncfile(mod).symbol{1});hold on;
     end
 end

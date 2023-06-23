@@ -39,7 +39,7 @@ function marvl_plot_profile(MARVLs)
 disp('plot_profile: START');
 
 %clear; close all;
-%run('E:\database\AED-MARVl-v0.2\Examples\Cockburn\MARVL.m');
+%run('E:\database\MARVL\examples\Cockburn_Sound\MARVL.m');
 master=MARVLs.master;
 config=MARVLs.profile;
 def=config;
@@ -71,12 +71,31 @@ for var = config.start_plot_ID:config.end_plot_ID
     if config.plotmodel
         allvars = tfv_infonetcdf(ncfile(1).name);
         raw=struct;
+        fielddata=struct;
         for site = 1:length(config.sitenames)
             disp(['Loading ',config.sitenames{site}]);
             rawData=load_AED_vars(ncfile,1,loadname,allvars);
             [rawData.data.(loadname),c_units,isConv]  = tfv_Unit_Conversion(rawData.data.(loadname),loadname);
             raw(site).data = tfv_getmodeldatalocation(ncfile(1).name,rawData.data,config.siteX(site),config.siteY(site),{loadname});
-           % raw(site).data=rawdata2; clear rawdata;
+            % raw(site).data=rawdata2; clear rawdata;
+            
+            if config.plotvalidation
+                % load field data
+                fieldt=load(master.fielddata_matfile);
+                field=fieldt.(master.fielddata);
+                
+                sites=fieldnames(field);
+                
+                if sum(cellfun(@(s) ~isempty(strfind(config.sitenames{site}, s)), sites))>0
+                    fielddata(site).data=field.(config.sitenames{site}).(loadname);
+                    [fielddata(site).data.Data,c_units,isConv]  = tfv_Unit_Conversion(fielddata(site).data.Data,loadname);
+                else
+                    msg=['Warning: site ',config.sitenames{site},' is not found in the field dataset'];
+                    warning(msg);
+                    stop;
+                end
+            end
+            
         end
     end
     % save(['E:\database\AED-MARVl-v0.2\Examples\Swan\',loadname,'.mat'],'raw','-mat','-v7.3');
@@ -100,81 +119,155 @@ for var = config.start_plot_ID:config.end_plot_ID
         set(gcf, 'PaperUnits', 'centimeters');
         set(gcf,'paperposition',[0 0 xSize ySize]);
         
-        hfig=pcolor(raw(site).data.date,raw(site).data.depths,raw(site).data.profile);
-        shading flat;
-        hc=colorbar;
-        title(hc,c_units);
-        
-        % polishing the figure (ticks, labels, titles, legends)
-        % Y axis and label
-
-            if def.isylabel
-               ylabel('Depth (m)','fontsize',6,'FontWeight','bold',...
-                        'color',[0.4 0.4 0.4],'horizontalalignment','center');
-            end
-
-        if def.isYlim
-            if ~isempty(def.cAxis(var).value)
-                ylim([def.cAxis(var).value]);
-            end
-        else
-            def.cAxis(var).value = get(gca,'ylim');
-            def.cAxis(var).value(1) = 0;
+        if strcmpi(config.plottype,'whole')
             
-        end
-        
-        % X axis and label
-        xlim([def.datearray(1) def.datearray(end)]);
-        
-
+            if config.plotvalidation
+                subplot(2,1,1);
+            end
+            hfig=pcolor(raw(site).data.date,raw(site).data.depths,raw(site).data.profile);
+            shading interp;
+            hc=colorbar;
+            title(hc,c_units);
+            
+            % polishing the figure (ticks, labels, titles, legends)
+            % Y axis and label
+            
+            if def.isylabel
+                ylabel('Depth (m)','fontsize',6,'FontWeight','bold',...
+                    'color',[0.4 0.4 0.4],'horizontalalignment','center');
+            end
+            
+            %   if def.isYlim
+            if ~isempty(def.ylim)
+                ylim([def.ylim]);
+            end
+            
+            if ~isempty(def.cAxis(var).value)
+                caxis([def.cAxis(var).value]);
+            end
+            
+            % X axis and label
+            xlim([def.datearray(1) def.datearray(end)]);
+            
             set(gca,'Xtick',def.datearray,...
                 'XTickLabel',datestr(def.datearray,def.dateformat),...
                 'FontSize',master.xlabelsize);
-
-        % title
-        if def.istitled
-            if master.add_human
-            title([regexprep(config.sitenames{site},'_',' '),': ',loadname_human, ' profile'],...
-                'FontSize',master.titlesize,...
-                'FontWeight','bold');
-            else
-                title([regexprep(config.sitenames{site},'_',' '),': ',loadname, ' profile'],...
-                'FontSize',master.titlesize,...
-                'FontWeight','bold');
+            set(gca,'box','on','LineWidth',1.0,'Layer','top');
+            
+            % title
+            if def.istitled
+                if master.add_human
+                    title([regexprep(config.sitenames{site},'_',' '),': ',loadname_human, ' (modelled)'],...
+                        'FontSize',master.titlesize,...
+                        'FontWeight','bold');
+                else
+                    title([regexprep(config.sitenames{site},'_',' '),': ',loadname, ' (modelled)'],...
+                        'FontSize',master.titlesize,...
+                        'FontWeight','bold');
+                end
             end
-        end
-%         
-%         % legend
-%         if def.islegend
-%             leg = legend('show');
-%             set(leg,'location',def.legendlocation,'fontsize',def.legendsize);
-%         else
-%             leg = legend('location',def.legendlocation);
-%             set(leg,'fontsize',def.legendsize);
-%         end
-%         
-%         if  def.isGridon
-%             grid on;
-%         end
-%         
-        
+            
+            if config.plotvalidation
+                subplot(2,1,2);
                 
+                hfig2=pcolor(fielddata(site).data.Date,fielddata(site).data.Depth,fielddata(site).data.Data);
+                shading interp;
+                hc=colorbar;
+                title(hc,c_units);
+                
+                % polishing the figure (ticks, labels, titles, legends)
+                % Y axis and label
+                
+                if def.isylabel
+                    ylabel('Depth (m)','fontsize',6,'FontWeight','bold',...
+                        'color',[0.4 0.4 0.4],'horizontalalignment','center');
+                end
+                
+                if ~isempty(def.ylim)
+                    ylim([def.ylim]);
+                end
+                
+                if ~isempty(def.cAxis(var).value)
+                    caxis([def.cAxis(var).value]);
+                end
+                
+                % X axis and label
+                xlim([def.datearray(1) def.datearray(end)]);
+                
+                set(gca,'Xtick',def.datearray,...
+                    'XTickLabel',datestr(def.datearray,def.dateformat),...
+                    'FontSize',master.xlabelsize);
+                set(gca,'box','on','LineWidth',1.0,'Layer','top');
+                
+                % title
+                if def.istitled
+                    if master.add_human
+                        title([regexprep(config.sitenames{site},'_',' '),': ',loadname_human, ' (observed)'],...
+                            'FontSize',master.titlesize,...
+                            'FontWeight','bold');
+                    else
+                        title([regexprep(config.sitenames{site},'_',' '),': ',loadname, ' (observed)'],...
+                            'FontSize',master.titlesize,...
+                            'FontWeight','bold');
+                    end
+                end
+                
+            end
+        
+        else
+            color1=[69,117,180]./255;
+            color2=[215,48,39]./255;
+            
+            for cc=1:length(config.datearray)
+                tc=config.datearray(cc);
+                subplot(config.RCnum(1),config.RCnum(2),cc);
+                
+                indc=find(abs(raw(site).data.date-tc)==min(abs(raw(site).data.date-tc)));
+                plot(raw(site).data.profile(:,indc),raw(site).data.depths,...
+                    'Color',color1);
+                hold on;
+                
+                if config.plotvalidation
+                indm=find(abs(fielddata(site).data.Date-tc)==min(abs(fielddata(site).data.Date-tc)));
+                plot(fielddata(site).data.Data(:,indm),fielddata(site).data.Depth,...
+                    'Color',color2);
+                hold on;
+                end
+                
+                
+                if def.isylabel
+                    ylabel('Depth (m)','fontsize',6,'FontWeight','bold',...
+                        'color',[0.4 0.4 0.4],'horizontalalignment','center');
+                end
+                
+                if ~isempty(def.ylim)
+                    ylim([def.ylim]);
+                end
+                title(datestr(tc,'yyyy-mm-dd HH:MM'));
+                set(gca,'box','on','LineWidth',1.0,'Layer','top');
+            end
+                
+            hl=legend('Modelled','Observed');
+            set(hl,'Position',[0.4 0.02 0.2 0.02],'NumColumns',2);
+            
+        end
+        
         % export the figure
-
-            final_sitename = [config.sitenames{site},'.eps'];
-
+        
+        final_sitename = [config.sitenames{site},'.eps'];
+        
         finalname_p = [savedir,final_sitename];
         
         if exist('filetype','var')
             if strcmpi(filetype,'png')
-                print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-opengl');
+                print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-r300');
             else
-                saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+                print(gcf,'-djpg',regexprep(finalname_p,'.eps','.jpg'),'-r300');
             end
         else
-            saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+            %   saveas(gcf,regexprep(finalname_p,'.eps','.png'));
+            print(gcf,'-dpng',regexprep(finalname_p,'.eps','.png'),'-r300');
         end
-               
     end
     
     if config.isHTML
