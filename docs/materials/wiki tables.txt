@@ -183,9 +183,7 @@
 | **plotdepth**       | choose from surface or bottom layer       | surface or bottom                                                                    |                                                                           |
 | **Style**           | choose from ‘m_map’ or ‘none’             | ‘m_map’ or ‘none’                                                                    |                                                                           |
 | **plottype**        | choose from ‘figure’ or ‘movie’           | ‘figure’ or ‘movie’                                                                  |                                                                           |
-| **meshtype**        | choose from ‘patch’ or ‘meshgrid’         | ‘patch’: use original TFV mesh;
-
-‘meshgrid’: interpolate TFV outputs into mesh grid; |                                                                           |
+| **meshtype**        | choose from ‘patch’ or ‘meshgrid’         | **‘patch’**: use original TFV mesh;<br />**‘meshgrid’**: interpolate TFV outputs into mesh grid; |                                                                           |
 | **add_quiver**      | Option to include current vectors         | 1: include; 0: not include                                                           |                                                                           |
 | **add_coastline**   | Option to include coastal line onto map   | 1: include; 0: not include                                                           |                                                                           |
 | **coastline_file**  | File path of the coastline data           |                                                                                      | Work only when add_coastline = 1; and the data is saved in a .mat format; |
