@@ -176,4 +176,41 @@
 | **cAxis.value**     | define limits of Y axis                         | empty [] by default, matlab will automatically adjust the y limit |                                                                                                    |
 | **filetype**        | define figure file type                         | 'png' or 'eps'                                                    | 'png' to save figures to PNG format only; 'eps' to save figures in both EPS and 300dpi JPG formats |
 
+| **Field name**      | **Description**                           | **Options**                                                                          | **Comments**                                                              |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| **start_plot_ID**   | select which variable to start plotting   |                                                                                      | refer to the setting in master.varname                                    |
+| **end_plot_ID**     | select which variable to finish plotting  |                                                                                      | refer to the setting in master.varname                                    |
+| **plotdepth**       | choose from surface or bottom layer       | surface or bottom                                                                    |                                                                           |
+| **Style**           | choose from ‘m_map’ or ‘none’             | ‘m_map’ or ‘none’                                                                    |                                                                           |
+| **plottype**        | choose from ‘figure’ or ‘movie’           | ‘figure’ or ‘movie’                                                                  |                                                                           |
+| **meshtype**        | choose from ‘patch’ or ‘meshgrid’         | ‘patch’: use original TFV mesh;
+
+‘meshgrid’: interpolate TFV outputs into mesh grid; |                                                                           |
+| **add_quiver**      | Option to include current vectors         | 1: include; 0: not include                                                           |                                                                           |
+| **add_coastline**   | Option to include coastal line onto map   | 1: include; 0: not include                                                           |                                                                           |
+| **coastline_file**  | File path of the coastline data           |                                                                                      | Work only when add_coastline = 1; and the data is saved in a .mat format; |
+| **xlim**            | Define the x axis limit                   |                                                                                      |                                                                           |
+| **ylim**            | Define the y axis limit                   |                                                                                      |                                                                           |
+| **FileFormat**      | define movie format                       | choose mp4 or avi                                                                    |                                                                           |
+| **Quality**         | define movie quality                      |                                                                                      | 100 by default                                                            |
+| **FrameRate**       | define movie frame rate                   |                                                                                      | 6 by default                                                              |
+| **resolution**      | define movie/figure resolution            |                                                                                      | [1024,768] by default                                                     |
+| **colormap**        | define color map type                     | check matlab help for colormap options                                               |                                                                           |
+| **save_image**      | option to save frames to images           | 1: save; 0: not save;                                                                |                                                                           |
+| **datearray**       | define time period for move               |                                                                                      |                                                                           |
+| **dateformat**      | define date format in movie               |                                                                                      |                                                                           |
+| **plot_interval**   | define interval to plot                   |                                                                                      | refer to model output intervals                                           |
+| **outputdirectory** | define directory to save plots            |                                                                                      |                                                                           |
+| **htmloutput**      | define directory to save HTML files       |                                                                                      |                                                                           |
+| **clip_depth**      | define minimum depth to remove NaN values |                                                                                      | 0.05 by default                                                           |
+| **istitled**        | option to add title                       | 1: add; 0: not add                                                                   | 1 by default                                                              |
+| **isColorbar**      | option to add colorbar                    | 1: add; 0: not add                                                                   | 1 by default                                                              |
+| **isylabel**        | option to add y label                     | 1: add; 0: not add                                                                   | 1 by default                                                              |
+| **islegend**        | option to add legend                      | 1: add; 0: not add                                                                   | 1 by default                                                              |
+| **isYlim**          | option to define Y axis limits            | 1: add; 0: not add                                                                   | 0 by default                                                              |
+| **isGridon**        | option to add grid on                     | 1: add; 0: not add                                                                   | 1 by default                                                              |
+| **dimensions**      | define figure dimensions in centimeters   | [20 10] by default                                                                   |                                                                           |
+| **cAxis.value**     | define color caxis limits                 | empty [] by default, matlab will automatically adjust the y limit                    |                                                                           |
+
+
 
