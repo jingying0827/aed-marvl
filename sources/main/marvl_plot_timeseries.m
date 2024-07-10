@@ -913,7 +913,7 @@ if isvalidation
                     [ydata_min_d,~,~] = tfv_Unit_Conversion(ydata_min_d,loadname);
                     
                     xdata_dt=[xdata_dt xdata_d'];
-                    ydata_dt=[ydata_dt ydata_d];
+                    ydata_dt=[ydata_dt ydata_d']; %BB Added '
                     
                     if isfield(fdata.(sitenames{sss(j)}).(loadname),'Agency')
                         agency = fdata.(sitenames{sss(j)}).(loadname).Agency;
