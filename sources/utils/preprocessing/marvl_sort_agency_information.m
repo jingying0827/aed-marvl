@@ -38,7 +38,27 @@ if sum(fgf)>0
     
     mface=mface_options{opt_f};
     mcolor=mcolor_options(opt_c,:);
-    
+
+elseif strcmpi('HT-WLWQ',agency)
+    mface='>';
+    mcolor=[37,37,37]./255;
+
+elseif strcmpi('HT-WLWQ-SURFCONT',agency)
+    mface='-';
+    mcolor=[115,115,115]./255;
+
+elseif strcmpi('HT-WLWQ-BEDCONT',agency)
+    mface='-';
+    mcolor=[189,189,189]./255;
+
+elseif strcmpi('HT-MET',agency)
+    mface='+';
+    mcolor=[82,82,82]./255;
+
+elseif strcmpi('HT-WLWQ-CONT',agency)
+    mface='-';
+    mcolor=[37,37,37]./255;
+
 else
     mface = '>k';
     mcolor = [255/255 61/255 9/255];
