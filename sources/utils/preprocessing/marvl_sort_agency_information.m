@@ -43,6 +43,10 @@ elseif strcmpi('HT-WLWQ',agency)
     mface='>';
     mcolor=[37,37,37]./255;
 
+elseif strcmpi('HT-WLWQ-CYANOLAKE',agency)
+    mface='>';
+    mcolor=[86,86,86]./255;
+
 elseif strcmpi('HT-WLWQ-SURFCONT',agency)
     mface='-';
     mcolor=[115,115,115]./255;
